@@ -1,6 +1,6 @@
-﻿--[[
+--[[
 
-	Finite Resistance V1.5
+	Finite Resistance V1.5.1
 	by @artofcoding212 on Discord
 
 	Join the discord: https://discord.gg/G79ZucGAwW
@@ -1418,6 +1418,20 @@ function arg_plr(arg: string): Player?
 	return nil
 end
 
+local RELOADTP = true 
+conn(client.OnTeleport, function(c)
+	if not RELOADTP then
+		return
+	end
+	
+	if queue_on_teleport then
+		queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/artofcoding212/FiniteResistance/refs/heads/main/finiteresistance.lua"))')
+	end
+end)
+add_command("reloadtp", "disables/enables <font size=\"15\">(enabled by default)</font> reloading the latest version of the script on teleport", {}, {}, function(args)
+	RELOADTP = not RELOADTP
+end)
+
 local SHADOWS_EN = true
 local SHADOWS_MAP: {[Instance]: boolean} = {}
 add_command("shadows", "toggle shadows (reduces lag)", {}, {}, function(args)
@@ -2229,36 +2243,9 @@ add_command("coors", "print your coordinates and tries to copy them", {}, {}, fu
 	
 	print("COORDINATES: ", coor.X, coor.Y, coor.Z)
 	
-	if setclipbaord then
+	if setclipboard then
 		setclipboard(`{coor.X} {coor.Y} {coor.Z}`)
 	end	
-end)
-
-add_command("copymessage", "copies the result of a bypassed message to the clipboard", {"msg"}, {"cmsg", "cpymsg"}, function(args)
-	if #args < 1 or not setclipboard then
-		if not setclipboard then
-			warn("Your exploit does not support copying to the clipboard, so 'copymessage' cannot be executed.")
-		end
-		return
-	end
-	
-	local msg = ""
-	
-	for i, arg in args do
-		msg = msg..arg..`{i<#args and " " or ""}`
-	end
-	
-	local new = ""
-	
-	for _, c in msg:split("") do
-		if DOTS[c] then
-			new = new..DOTS[c]
-		else
-			new = new..c
-		end
-	end
-	
-	setclipboard(new)
 end)
 
 local ESP_PLR: Player? = nil
