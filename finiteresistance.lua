@@ -1425,7 +1425,7 @@ conn(client.OnTeleport, function(c)
 	end
 	
 	if queue_on_teleport then
-		queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/artofcoding212/FiniteResistance/refs/heads/main/finiteresistance.lua"))')
+		queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/artofcoding212/FiniteResistance/refs/heads/main/finiteresistance.lua"))()')
 	end
 end)
 add_command("reloadtp", "disables/enables <font size=\"15\">(enabled by default)</font> reloading the latest version of the script on teleport", {}, {}, function(args)
