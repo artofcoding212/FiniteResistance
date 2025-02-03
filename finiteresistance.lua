@@ -1,6 +1,6 @@
 --[[
 
-	Finite Resistance V1.5.2
+	Finite Resistance V1.5.1
 	by @artofcoding212 on Discord
 
 	Join the discord: https://discord.gg/G79ZucGAwW
@@ -1757,10 +1757,12 @@ add_command("fly", "fly", {"speed?"}, {}, function(args)
 	
 	conn(client.Character.Humanoid.Died, function(c)
 		exec_cmd("unfly")
-		conn(client.CharacterAdded, function(c)
-			exec_cmd(`fly {FLY_SPEED}`)
-			c:Disconnect()
-		end)
+		c:Disconnect()
+	end)
+	
+	conn(client.CharacterAdded, function(c)
+		task.wait(1)
+		exec_cmd(`fly {FLY_SPEED}`)
 		c:Disconnect()
 	end)
 	
@@ -1853,10 +1855,12 @@ add_command("cframefly", "bypasses most fly anticheats by using cframe instead o
 	
 	conn(client.Character.Humanoid.Died, function(c)
 		exec_cmd("uncfly")
-		conn(client.CharacterAdded, function(c)
-			exec_cmd(`cfly {FLY_SPEED}`)
-			c:Disconnect()
-		end)
+		c:Disconnect()
+	end)
+	
+	conn(client.CharacterAdded, function(c)
+		task.wait(1)
+		exec_cmd(`cfly {CFLYSPEED}`)
 		c:Disconnect()
 	end)
 	
@@ -1920,10 +1924,12 @@ add_command("velocityfly", "bypasses most fly anticheats by using velocity inste
 
 	conn(client.Character.Humanoid.Died, function(c)
 		exec_cmd("unvfly")
-		conn(client.CharacterAdded, function(c)
-			exec_cmd(`vfly {FLY_SPEED}`)
-			c:Disconnect()
-		end)
+		c:Disconnect()
+	end)
+	
+	conn(client.CharacterAdded, function(c)
+		task.wait(1)
+		exec_cmd(`vfly {VFLYSPEED}`)
 		c:Disconnect()
 	end)
 
