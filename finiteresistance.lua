@@ -1,6 +1,6 @@
 --[[
 
-	Finite Resistance V1.5.1
+	Finite Resistance V1.5.2
 	by @artofcoding212 on Discord
 
 	Join the discord: https://discord.gg/G79ZucGAwW
@@ -1755,6 +1755,15 @@ add_command("fly", "fly", {"speed?"}, {}, function(args)
 	}, torso)
 	local speed = 0
 	
+	conn(client.Character.Humanoid.Died, function(c)
+		exec_cmd("unfly")
+		conn(client.CharacterAdded, function(c)
+			exec_cmd(`fly {FLY_SPEED}`)
+			c:Disconnect()
+		end)
+		c:Disconnect()
+	end)
+	
 	conn(rs.RenderStepped, function(c)
 		if not FLY then
 			c:Disconnect()
@@ -1842,6 +1851,15 @@ add_command("cframefly", "bypasses most fly anticheats by using cframe instead o
 	}, workspace)
 	CFLYPART = part
 	
+	conn(client.Character.Humanoid.Died, function(c)
+		exec_cmd("uncfly")
+		conn(client.CharacterAdded, function(c)
+			exec_cmd(`cfly {FLY_SPEED}`)
+			c:Disconnect()
+		end)
+		c:Disconnect()
+	end)
+	
 	CFLYCONN = rs.Heartbeat:Connect(function(delta)
 		if not client.Character or not client.Character:FindFirstChild("Humanoid") or not client.Character:FindFirstChild("HumanoidRootPart") then
 			return
@@ -1899,6 +1917,15 @@ add_command("velocityfly", "bypasses most fly anticheats by using velocity inste
 		CanCollide = false,
 	}, workspace)
 	VFLYPART = part
+
+	conn(client.Character.Humanoid.Died, function(c)
+		exec_cmd("unvfly")
+		conn(client.CharacterAdded, function(c)
+			exec_cmd(`vfly {FLY_SPEED}`)
+			c:Disconnect()
+		end)
+		c:Disconnect()
+	end)
 
 	VFLYCONN = rs.Heartbeat:Connect(function(delta)
 		if not client.Character or not client.Character:FindFirstChild("Humanoid") or not client.Character:FindFirstChild("HumanoidRootPart") then
@@ -2848,7 +2875,6 @@ uis.InputBegan:Connect(function(i, p)
 				if target.Character then
 					for _, tool in arr_merge(target.Character:GetChildren(), target.Backpack:GetChildren()) do
 						if tool:IsA("Tool") and not tool:HasTag("MarkedTool") then
-							print("hashed")
 							local hash = rand_str()
 							tool:AddTag("MarkedTool")
 							tool:AddTag(hash)
