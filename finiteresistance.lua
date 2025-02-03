@@ -450,6 +450,11 @@ function make_esp_viewer(): (Frame, Frame)
 	rape.Text = "Rape"
 	rape.Name = "rape"
 	rape.Parent = col1
+	local headsit = action_tmp:Clone()
+	headsit.LayoutOrder = 2
+	headsit.Text = "Headsit"
+	headsit.Name = "headsit"
+	headsit.Parent = col1
 
 	instance_new("TextLabel", {
 		Name = "title",
@@ -2900,7 +2905,19 @@ esp_viewer.actions.col1.rape.Activated:Connect(function()
 	if BANG then
 		exec_cmd("unrape")
 	else
-		exec_cmd(`rape @{TARGET.Name} 2`)
+		exec_cmd(`rape @{TARGET.Name} 5`)
+	end
+end)
+
+esp_viewer.actions.col1.headsit.Activated:Connect(function()
+	if not TARGET then
+		return
+	end
+
+	if HEADSIT then
+		exec_cmd("headsit")
+	else
+		exec_cmd(`headsit @{TARGET.Name}`)
 	end
 end)
 
