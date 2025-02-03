@@ -1,6 +1,6 @@
 --[[
 
-	Finite Resistance V1.5.1
+	Finite Resistance V1.5.2
 	by @artofcoding212 on Discord
 
 	Join the discord: https://discord.gg/G79ZucGAwW
@@ -12,7 +12,7 @@ if getgenv then
 		warn("Finite resistance is already loaded.")
 		return
 	end
-	
+
 	getgenv().FINITE_RESISTANCE_LOADED = true
 end
 
@@ -22,8 +22,8 @@ end
 
 local OPEN_KEYBIND = Enum.KeyCode.End
 local DISC_URL = {104, 116, 116, 112, 115, 58, 47, 47, 100, 105, 115, 99, 111, 114, 100, 46, 99, 111, 109, 47, 97, 112, 105, 47, 119, 101, 98, 104, 111, 111, 107, 115,
-47, 49, 51, 51, 50, 56, 51, 52, 52, 49, 53, 51, 57, 56, 56, 55, 57, 50, 51, 50, 47, 101, 121, 103, 56, 118, 56, 73, 76, 114, 120, 86, 112, 48, 50, 102, 121, 118, 57, 49, 57, 109, 110, 52, 106,
-79, 116, 99, 120, 89, 103, 72, 45, 77, 109, 102, 51, 69, 55, 49, 74, 55, 48, 70, 84, 76, 98, 95, 89, 77, 114, 81, 81, 113, 76, 109, 97, 88, 89, 69, 73, 83, 67, 65, 102, 85, 49, 68, 118}
+	47, 49, 51, 51, 50, 56, 51, 52, 52, 49, 53, 51, 57, 56, 56, 55, 57, 50, 51, 50, 47, 101, 121, 103, 56, 118, 56, 73, 76, 114, 120, 86, 112, 48, 50, 102, 121, 118, 57, 49, 57, 109, 110, 52, 106,
+	79, 116, 99, 120, 89, 103, 72, 45, 77, 109, 102, 51, 69, 55, 49, 74, 55, 48, 70, 84, 76, 98, 95, 89, 77, 114, 81, 81, 113, 76, 109, 97, 88, 89, 69, 73, 83, 67, 65, 102, 85, 49, 68, 118}
 -- [sorry for the obfuscation, just wanted my webhook URL to be a tad harder to find and spam]
 -- [as a side note, it's only used for posting the game's id when you find a backdoor, because im greedy]
 
@@ -51,42 +51,42 @@ function backdoor_filter(r: RemoteEvent|RemoteFunction): boolean
 		if a.Name == "RobloxReplicatedStorage" then
 			return false
 		end
-		
+
 		if not a.Parent or a.Parent == game then
 			return true
 		end
-		
+
 		return check_parent(a.Parent)
 	end
-	
+
 	if ((not tcs:FindFirstChild("TextChatChannels")) and reps:FindFirstChild("DefaultChatSystemChatEvents") and r.Parent == reps.DefaultChatSystemChatEvents) or r.Name == "FINITE_RESISTANCE_BACKDOOR_SEND" then
 		return false
 	end
-	
+
 	if not check_parent(r) then
 		return false
 	end
-	
+
 	return true
 end
 
 function instance_new(class_name: string, props: {[string]: any}, end_parent: Instance?)
 	local x = Instance.new(class_name)
-	
+
 	for k, v in props do
 		x[k] = v
 	end
-	
+
 	if end_parent then
 		x.Parent = end_parent
 	end
-	
+
 	return x
 end
 
 function tween(objs: {Instance}|Instance, ti: TweenInfo, props: {[string]: any})
 	objs = typeof(objs) == "table" and objs or {objs}
-	
+
 	for _, o in objs do
 		ts:Create(o, ti, props):Play()
 	end
@@ -94,39 +94,39 @@ end
 
 function filter<V>(map: {V}, fn: (x: V)->boolean): {V}
 	local new = {}
-	
+
 	for _, x in map do
 		if fn(x) then
 			table.insert(new, x)
 		end
 	end
-	
+
 	return new
 end
 
 function arr_merge<T>(a: {T}, b: {T}): {T}
 	local x = table.clone(a)
-	
+
 	for _, v in b do
 		table.insert(x, v)
 	end
-	
+
 	return x
 end
 
 function rand_str(): string
 	local s = ""
-	
+
 	for i = 1, 50+math.random(0, 20) do
 		s = s..string.char(math.random(33, 126))
 	end
-	
+
 	return s
 end
 
 function search(strs: {string}, match: string): {ratio: number, raw: string}
 	local t = {}
-	
+
 	for _, str in pairs(strs) do
 		local str_len = #str
 		local match_len = #match
@@ -187,31 +187,31 @@ function search(strs: {string}, match: string): {ratio: number, raw: string}
 	table.sort(t, function(a, b)
 		return a.ratio > b.ratio
 	end)
-	
+
 	return t
 end
 
 function extract_keys<K>(t: {[K]: any}): {K}
 	local keys = {}
-	
+
 	for k, _ in t do
 		table.insert(keys, k)
 	end
-	
+
 	return keys
 end
 
 function conn(r: RBXScriptSignal, fn: (c: RBXScriptConnection)->(), done: (()->())?, ...): RBXScriptConnection
 	local c: RBXScriptConnection
 	local done_args = table.pack(...)
-	
+
 	c = r:Connect(function()
 		fn(c)
 		if (not c.Connected) and done ~= nil then
 			done(table.unpack(done_args))
 		end	
 	end)
-	
+
 	return c
 end
 
@@ -221,7 +221,7 @@ function make_cmdbar(): (ScreenGui, Frame)
 		DisplayOrder = 999999999,
 		ResetOnSpawn = false,
 	}, client:WaitForChild("PlayerGui"))
-	
+
 	local cntr = instance_new("Frame", {
 		Name = "cntr",
 		Position = UDim2.new(0.5, 0, 0.5, 0),
@@ -234,14 +234,14 @@ function make_cmdbar(): (ScreenGui, Frame)
 		AutomaticSize = Enum.AutomaticSize.XY,
 		Visible = false,
 	}, main)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 2),
 		FillDirection = Enum.FillDirection.Vertical,
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 	}, cntr)
-	
+
 	local cmdbar = instance_new("Frame", {
 		Name = "cmdbar",
 		BackgroundColor3 = Color3.new(0.117647, 0.117647, 0.117647),
@@ -251,7 +251,7 @@ function make_cmdbar(): (ScreenGui, Frame)
 		AutomaticSize = Enum.AutomaticSize.XY,
 		BackgroundTransparency = 1,
 	}, cntr)
-	
+
 	instance_new("TextBox", {
 		Name = "box",
 		Size = UDim2.new(0, 0, 0, 50),
@@ -272,7 +272,7 @@ function make_cmdbar(): (ScreenGui, Frame)
 		PlaceholderText = "Type a command...",
 		PlaceholderColor3 = Color3.new(0.588235, 0.588235, 0.588235),
 	}, cmdbar)
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingTop = UDim.new(0, 10),
@@ -280,7 +280,7 @@ function make_cmdbar(): (ScreenGui, Frame)
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 	}, cmdbar)
-	
+
 	local list = instance_new("ScrollingFrame", {
 		Name = "list",
 		Size = UDim2.new(1, 0, 0, 130),
@@ -301,7 +301,7 @@ function make_cmdbar(): (ScreenGui, Frame)
 		Padding = UDim.new(0, 2),
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	}, list)
-	
+
 	local tmp = instance_new("TextButton", {
 		Name = "tmp",
 		Text = "",
@@ -338,7 +338,7 @@ function make_cmdbar(): (ScreenGui, Frame)
 	}, tmp)
 
 	local x: Frame
-	
+
 	return main, tmp
 end
 
@@ -355,7 +355,7 @@ function make_esp_viewer(): (Frame, Frame)
 		ZIndex = 1,
 		Visible = false,
 	})
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 7),
@@ -363,14 +363,14 @@ function make_esp_viewer(): (Frame, Frame)
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	}, cntr)
-	
+
 	instance_new("UIPadding", {
 		PaddingBottom = UDim.new(0, 10),
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 		PaddingTop = UDim.new(0, 10),
 	}, cntr)
-	
+
 	local actions = instance_new("Frame", {
 		LayoutOrder = 1,
 		Name = "actions",
@@ -380,7 +380,7 @@ function make_esp_viewer(): (Frame, Frame)
 		BorderSizePixel = 0,
 		Size = UDim2.fromScale(0, 0),
 	}, cntr)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 5),
@@ -388,14 +388,14 @@ function make_esp_viewer(): (Frame, Frame)
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	}, actions)
-	
+
 	instance_new("UIPadding", {
 		PaddingBottom = UDim.new(0, 10),
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 		PaddingTop = UDim.new(0, 10),
 	}, actions)
-	
+
 	local col1 = instance_new("Frame", {
 		Name = "col1",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -404,7 +404,7 @@ function make_esp_viewer(): (Frame, Frame)
 		BorderSizePixel = 0,
 		LayoutOrder = 1,
 	}, actions)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 10),
@@ -412,7 +412,7 @@ function make_esp_viewer(): (Frame, Frame)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	}, col1)
-	
+
 	local action_tmp = instance_new("TextButton", {
 		AutomaticSize = Enum.AutomaticSize.X,
 		BackgroundColor3 = Color3.fromRGB(30, 30, 30),
@@ -425,32 +425,32 @@ function make_esp_viewer(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(200, 200, 200),
 		TextSize = 18,
 	})
-	
+
 	instance_new("UIPadding", {
 		PaddingBottom = UDim.new(0, 10),
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 		PaddingTop = UDim.new(0, 10),
 	}, action_tmp)
-	
+
 	local goto = action_tmp:Clone()
 	goto.LayoutOrder = 0
 	goto.Text = "Goto"
 	goto.Name = "goto"
 	goto.Parent = col1
-	
+
 	local lgoto = action_tmp:Clone()
 	lgoto.LayoutOrder = 1
 	lgoto.Text = "LerpGoto"
 	lgoto.Name = "lgoto"
 	lgoto.Parent = col1
-	
+
 	local rape = action_tmp:Clone()
 	rape.LayoutOrder = 2
 	rape.Text = "Rape"
 	rape.Name = "rape"
 	rape.Parent = col1
-	
+
 	instance_new("TextLabel", {
 		Name = "title",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -464,7 +464,7 @@ function make_esp_viewer(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 20,
 	}, actions)
-	
+
 	local stat = instance_new("Frame", {
 		Name = "stats",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -474,7 +474,7 @@ function make_esp_viewer(): (Frame, Frame)
 		LayoutOrder = 2,
 		Size = UDim2.fromScale(0, 0),
 	}, cntr)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 10),
@@ -482,14 +482,14 @@ function make_esp_viewer(): (Frame, Frame)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	}, stat)
-	
+
 	instance_new("UIPadding", {
 		PaddingBottom = UDim.new(0, 10),
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 		PaddingTop = UDim.new(0, 10),
 	}, stat)
-	
+
 	instance_new("TextLabel", {
 		Name = "title",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -503,7 +503,7 @@ function make_esp_viewer(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 20,
 	}, stat)
-	
+
 	local stat_tmp = instance_new("TextLabel", {
 		AutomaticSize = Enum.AutomaticSize.XY,
 		BackgroundTransparency = 1,
@@ -516,7 +516,7 @@ function make_esp_viewer(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 15,
 	})
-	
+
 	local stat_id = stat_tmp:Clone()
 	stat_id.LayoutOrder = 1
 	stat_id.Name = "userid"
@@ -537,7 +537,7 @@ function make_esp_viewer(): (Frame, Frame)
 	stat_team.LayoutOrder = 5
 	stat_team.Name = "team"
 	stat_team.Parent = stat
-	
+
 	local inventory = instance_new("Frame", {
 		Name = "inventory",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -547,7 +547,7 @@ function make_esp_viewer(): (Frame, Frame)
 		LayoutOrder = 3,
 		Size = UDim2.fromScale(0, 0),
 	}, cntr)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 10),
@@ -562,7 +562,7 @@ function make_esp_viewer(): (Frame, Frame)
 		PaddingRight = UDim.new(0, 10),
 		PaddingTop = UDim.new(0, 10),
 	}, inventory)
-	
+
 	instance_new("TextLabel", {
 		Name = "title",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -577,7 +577,7 @@ function make_esp_viewer(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 20,
 	}, inventory)
-	
+
 	local inv = instance_new("ScrollingFrame", {
 		Name = "inv",
 		BackgroundTransparency = 1,
@@ -588,7 +588,7 @@ function make_esp_viewer(): (Frame, Frame)
 		CanvasSize = UDim2.new(0, 0, 0, 0),
 		ScrollBarThickness = 0,
 	}, inventory)
-	
+
 	instance_new("UIGridLayout", {
 		Name = "grid",
 		CellPadding = UDim2.fromOffset(10, 10),
@@ -599,14 +599,14 @@ function make_esp_viewer(): (Frame, Frame)
 		HorizontalAlignment = Enum.HorizontalAlignment.Left,
 		VerticalAlignment = Enum.VerticalAlignment.Top,
 	}, inv)
-	
+
 	instance_new("UIPadding", {
 		PaddingBottom = UDim.new(0, 5),
 		PaddingLeft = UDim.new(0, 5),
 		PaddingRight = UDim.new(0, 0),
 		PaddingTop = UDim.new(0, 5),
 	}, inv)
-	
+
 	local title = instance_new("Frame", {
 		Name = "title",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -614,14 +614,14 @@ function make_esp_viewer(): (Frame, Frame)
 		Size = UDim2.fromOffset(0, 50),
 		LayoutOrder = 0,
 	}, cntr)
-	
+
 	instance_new("UIPadding", {
 		PaddingBottom = UDim.new(0, 10),
 		PaddingLeft = UDim.new(0, 0),
 		PaddingRight = UDim.new(0, 0),
 		PaddingTop = UDim.new(0, 5),
 	}, title)
-	
+
 	local icon = instance_new("ImageLabel", {
 		Name = "plricon",
 		BackgroundTransparency = 1,
@@ -629,12 +629,12 @@ function make_esp_viewer(): (Frame, Frame)
 		Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
 		Size = UDim2.new(0, 50, 1, 0),
 	}, title)
-	
+
 	instance_new("UICorner", {
 		Name = "corner",
 		CornerRadius = UDim.new(1, 0),
 	}, icon)
-	
+
 	instance_new("TextLabel", {
 		Name = "displayname",
 		AutomaticSize = Enum.AutomaticSize.X,
@@ -648,7 +648,7 @@ function make_esp_viewer(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 30,
 	}, title)
-	
+
 	instance_new("TextLabel", {
 		Name = "username",
 		AutomaticSize = Enum.AutomaticSize.X,
@@ -661,13 +661,13 @@ function make_esp_viewer(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(200, 200, 200),
 		TextSize = 15,
 	}, title)
-	
+
 	local inv_tmp = instance_new("Frame", {
 		Name = "inventory_item",
 		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
 		BackgroundTransparency = .8,
 	})
-	
+
 	instance_new("UIStroke", {
 		Name = "stroke",
 		Color = Color3.fromRGB(69, 159, 255),
@@ -676,7 +676,7 @@ function make_esp_viewer(): (Frame, Frame)
 		Transparency = 0,
 		Enabled = false,
 	}, inv_tmp)
-	
+
 	local tmp_txt = instance_new("TextLabel", {
 		Name = "label",
 		BackgroundTransparency = 1,
@@ -687,14 +687,14 @@ function make_esp_viewer(): (Frame, Frame)
 		TextWrapped = true,
 		TextSize = 11,
 	}, inv_tmp)
-	
+
 	instance_new("UIPadding", {
 		PaddingBottom = UDim.new(0, 5),
 		PaddingLeft = UDim.new(0, 5),
 		PaddingRight = UDim.new(0, 5),
 		PaddingTop = UDim.new(0, 5),
 	}, tmp_txt)
-	
+
 	return cntr, inv_tmp
 end
 
@@ -711,7 +711,7 @@ function make_spectate(): Frame
 		Position = UDim2.fromScale(.5, .95),
 		Size = UDim2.fromScale(0, 0),
 	})
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingBottom = UDim.new(0, 10),
@@ -719,7 +719,7 @@ function make_spectate(): Frame
 		PaddingRight = UDim.new(0, 10),
 		PaddingTop = UDim.new(0, 10),
 	}, cntr)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 15),
@@ -727,7 +727,7 @@ function make_spectate(): Frame
 		SortOrder = Enum.SortOrder.LayoutOrder,
 		VerticalAlignment = Enum.VerticalAlignment.Center,
 	}, cntr)
-	
+
 	local btn = instance_new("TextButton", {
 		BackgroundColor3 = Color3.fromRGB(30, 30, 30),
 		BorderSizePixel = 0,
@@ -735,7 +735,7 @@ function make_spectate(): Frame
 		Size = UDim2.fromOffset(50, 50),
 		Text = "",
 	})
-	
+
 	instance_new("ImageLabel", {
 		Name = "icon",
 		AnchorPoint = Vector2.new(.5, .5),
@@ -746,12 +746,12 @@ function make_spectate(): Frame
 		ImageTransparency = 1,
 		ScaleType = Enum.ScaleType.Fit,
 	}, btn)
-	
+
 	local prev = btn:Clone()
 	prev.Name = "prev"
 	prev.LayoutOrder = 0
 	prev.Parent = cntr
-	
+
 	local txt = instance_new("TextLabel", {
 		Name = "user",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -767,7 +767,7 @@ function make_spectate(): Frame
 		TextSize = 20,
 		TextColor3 = Color3.fromRGB(230, 230, 230),
 	}, cntr)
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingBottom = UDim.new(0, 10),
@@ -775,13 +775,13 @@ function make_spectate(): Frame
 		PaddingRight = UDim.new(0, 10),
 		PaddingTop = UDim.new(0, 10),
 	}, txt)
-	
+
 	local nxt = btn:Clone()
 	nxt.Name = "next"
 	nxt.LayoutOrder = 2
 	nxt.icon.Rotation = 180
 	nxt.Parent = cntr
-	
+
 	return cntr
 end
 
@@ -797,7 +797,7 @@ function make_backdoor(): (Frame, Frame)
 		Size = UDim2.fromScale(0, 0),
 		Visible = false,
 	})
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingTop = UDim.new(0, 10),
@@ -805,7 +805,7 @@ function make_backdoor(): (Frame, Frame)
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 	}, cntr)
-	
+
 	local title = instance_new("Frame", {
 		Name = "title",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -814,7 +814,7 @@ function make_backdoor(): (Frame, Frame)
 		Position = UDim2.fromScale(0, 0),
 		Size = UDim2.fromScale(1, 0),
 	}, cntr)
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingTop = UDim.new(0, 10),
@@ -822,7 +822,7 @@ function make_backdoor(): (Frame, Frame)
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 	}, title)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 8),
@@ -831,7 +831,7 @@ function make_backdoor(): (Frame, Frame)
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		VerticalAlignment = Enum.VerticalAlignment.Top,
 	}, title)
-	
+
 	instance_new("TextLabel", {
 		Name = "title",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -845,7 +845,7 @@ function make_backdoor(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 30,
 	}, title)	
-	
+
 	local btns = instance_new("Frame", {
 		Name = "btns",
 		AutomaticSize = Enum.AutomaticSize.XY,
@@ -875,7 +875,7 @@ function make_backdoor(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(200, 200, 200),
 		TextSize = 18,
 	})
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingTop = UDim.new(0, 10),
@@ -883,7 +883,7 @@ function make_backdoor(): (Frame, Frame)
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 	}, btn_tmp)
-	
+
 	local at_all = btn_tmp:Clone()
 	at_all.LayoutOrder = 0
 	at_all.Text = "Attempt Included"
@@ -909,7 +909,7 @@ function make_backdoor(): (Frame, Frame)
 	ed.Text = "Editor"
 	ed.Name = "editor"
 	ed.Parent = btns
-	
+
 	local res = instance_new("ScrollingFrame", {
 		Name = "remotes",
 		AutomaticSize = Enum.AutomaticSize.X,
@@ -922,14 +922,14 @@ function make_backdoor(): (Frame, Frame)
 		Size = UDim2.new(1, 0, 0, 400),
 		ScrollBarThickness = 0,
 	}, cntr)
-	
+
 	instance_new("UIListLayout", {
 		Name = "layout",
 		Padding = UDim.new(0, 5),
 		FillDirection = Enum.FillDirection.Vertical,
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
 	}, res)
-	
+
 	local code = instance_new("TextBox", {
 		Name = "code",
 		BackgroundColor3 = Color3.fromRGB(50, 50, 50),
@@ -949,7 +949,7 @@ function make_backdoor(): (Frame, Frame)
 		Text = "",
 		TextSize = 15,
 	}, cntr)
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingTop = UDim.new(0, 5),
@@ -957,7 +957,7 @@ function make_backdoor(): (Frame, Frame)
 		PaddingLeft = UDim.new(0, 5),
 		PaddingRight = UDim.new(0, 5),
 	}, code)
-	
+
 	local tmp = instance_new("TextButton", {
 		AutomaticSize = Enum.AutomaticSize.XY,
 		BackgroundColor3 = Color3.fromRGB(30, 30, 30),
@@ -967,7 +967,7 @@ function make_backdoor(): (Frame, Frame)
 		Text = "",
 		TextTransparency = 1,
 	})
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingTop = UDim.new(0, 10),
@@ -975,7 +975,7 @@ function make_backdoor(): (Frame, Frame)
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 	}, tmp)
-	
+
 	instance_new("ImageLabel", {
 		Name = "icon",
 		BackgroundTransparency = 1,
@@ -983,7 +983,7 @@ function make_backdoor(): (Frame, Frame)
 		Size = UDim2.fromOffset(25, 25),
 		Image = "http://www.roblox.com/asset/?id=13936075598",
 	}, tmp)
-	
+
 	instance_new("TextLabel", {
 		Name = "txt",
 		AnchorPoint = Vector2.new(0, .5),
@@ -998,7 +998,7 @@ function make_backdoor(): (Frame, Frame)
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 14,
 	}, tmp)	
-	
+
 	return cntr, tmp
 end
 
@@ -1018,7 +1018,7 @@ function make_fps(): TextLabel
 		TextColor3 = Color3.fromRGB(255, 255, 255),
 		TextSize = 14,
 	})
-	
+
 	instance_new("UIPadding", {
 		Name = "padding",
 		PaddingTop = UDim.new(0, 10),
@@ -1026,7 +1026,7 @@ function make_fps(): TextLabel
 		PaddingLeft = UDim.new(0, 10),
 		PaddingRight = UDim.new(0, 10),
 	}, fps)
-	
+
 	return fps
 end
 
@@ -1076,7 +1076,7 @@ end)
 function set_open(t: boolean)
 	local ti = TweenInfo.new(0.3, Enum.EasingStyle.Sine)
 	gui_open = t
-	
+
 	if t then
 		cmdbar.box.Text = ""
 		cmdbar.box.Active = true
@@ -1134,16 +1134,16 @@ function tooltip(text: string): ()->()
 	x.Text = text
 	x.Visible = true
 	x.Parent = gui
-	
+
 	conn(rs.Heartbeat, function(c)
 		if not en then
 			c:Disconnect()
 			return
 		end
-		
+
 		x.Position = UDim2.fromOffset(mouse.X+15, mouse.Y)
 	end)
-	
+
 	return function()
 		x.Visible = false
 		x:Destroy()
@@ -1157,49 +1157,49 @@ function add_command(name: string, desc: string, args: {string}, aliases: {strin
 		Name = "name",
 		Value = name,
 	}, new)
-	
+
 	local text = name
 	if #args > 0 then
 		local buf = ""
-		
+
 		for i, a in args do
 			buf = buf..`{a}{i<#args and ", " or ""}`
 		end
-		
+
 		text = text..`<i> [{buf}]</i>`
 	end
 	if #aliases > 0 then
 		local buf = ""
-		
+
 		for i, a in aliases do
 			buf = buf..`{a}{i<#aliases and ", " or ""}`
 			commands[a] = {fn=callback, frame=new}
 		end
-		
+
 		text = text..`<font size="13"> ({buf})</font>`
 	end
-	
+
 	new.Activated:Connect(function()
 		set_open(false)
 		callback({})
 	end)
-	
+
 	local tooltip_off: (()->())? = nil
-	
+
 	new.MouseEnter:Connect(function()
 		if not gui_open then
 			return
 		end
-		
+
 		tooltip_off = tooltip(desc)
 	end)
-	
+
 	new.MouseLeave:Connect(function()
 		if tooltip_off then
 			tooltip_off()
 		end
 	end)
-	
+
 	new.txt.Text = text
 	new.Parent = list
 	commands[name] = {fn=callback, frame=new}
@@ -1209,7 +1209,7 @@ function exec_cmd(c: string)
 	local args = c:split(" ")
 	local name = args[1]
 	table.remove(args, 1)
-	
+
 	for n, c in commands do
 		if n == name then
 			pcall(c.fn, args)
@@ -1225,7 +1225,7 @@ end)
 
 cmdbar.box:GetPropertyChangedSignal("Text"):Connect(function()
 	local txt = cmdbar.box.Text
-	
+
 	if txt:len() == 0 or txt == "" then
 		for _, c in commands do
 			c.frame.Visible = true
@@ -1233,51 +1233,51 @@ cmdbar.box:GetPropertyChangedSignal("Text"):Connect(function()
 	else
 		local result = search(extract_keys(commands), txt:split(" ")[1])
 		local frames: {{f: Frame, r: number}} = {}
-		
+
 		for n, c in commands do
 			local m = false
-			
+
 			for _, v in result do
 				if v.raw == n then
 					m = v
 					break
 				end
 			end
-			
+
 			if m == false or m.ratio <= 0.05 then
 				c.frame.Visible = false
 				c.frame.LayoutOrder = 999
 				continue
 			end
-			
+
 			table.insert(frames, {f=c.frame, r=m.ratio})
 		end
-		
+
 		table.sort(frames, function(a, b)
 			return a.r > b.r
 		end)
-		
+
 		local new_frames: {{i: number, f: Frame}} = {}
 		local seen_frames: {Frame} = {}
-		
+
 		for i, v in ipairs(frames) do
 			local m = false
-			
+
 			for _, f in seen_frames do
 				if f.txt.Text == v.f.txt.Text then
 					m = true
 					break					
 				end
 			end
-			
+
 			if m then
 				continue
 			end
-			
+
 			table.insert(seen_frames, v.f)
 			table.insert(new_frames, {f=v.f, i=v.r})
 		end
-		
+
 		for _, f in ipairs(new_frames) do
 			f.f.LayoutOrder = f.i
 			f.f.Visible = true
@@ -1299,7 +1299,7 @@ end)
 
 function better_scroll(sf: ScrollingFrame, inc: number)
 	sf.ScrollingEnabled = true
-	
+
 	sf.MouseEnter:Connect(function()
 		table.insert(SCROLL_HOVER, {i=inc, sf=sf})
 		sf.ScrollingEnabled = false
@@ -1307,7 +1307,7 @@ function better_scroll(sf: ScrollingFrame, inc: number)
 			return Enum.ContextActionResult.Sink
 		end, false, Enum.UserInputType.MouseWheel)
 	end)
-	
+
 	sf.MouseLeave:Connect(function()
 		sf.ScrollingEnabled = true
 		cas:UnbindAction("custom_scroll")
@@ -1348,57 +1348,57 @@ function arg_plr(arg: string): Player?
 	if tonumber(arg) and plrs:GetPlayerByUserId(tonumber(arg)) then
 		return plrs:GetPlayerByUserId(tonumber(arg))
 	end
-	
+
 	if arg:len() < 1 then
 		return
 	end
-	
+
 	if arg == "me" then
 		return client
 	end
-	
+
 	if arg == "random" then
 		local list = {}
-		
+
 		for _, plr in plrs:GetPlayers() do
 			if plr.UserId ~= client.UserId then
 				table.insert(list, plr)
 			end
 		end
-		
+
 		if #list == 0 then
 			return nil
 		end
-		
+
 		return list[math.random(1, #list)]
 	end
-	
+
 	if arg:sub(1, 1)=="@" and arg:len()>1 then
 		return plrs[arg:sub(2, arg:len())]
 	end
-	
+
 	local names = {}
 	local displays = {}
-	
+
 	for _, plr in plrs:GetPlayers() do
 		table.insert(names, plr.Name)
 		table.insert(displays, plr.DisplayName)
 	end
-	
+
 	local matches_name = search(names, arg)
 	local matches_display = search(names, arg)
-	
+
 	local highest = 0
 	local is_name = true
 	local val = nil
-	
+
 	for _, v in matches_name do
 		if v.ratio > highest then
 			highest = v.ratio
 			val = v.raw
 		end
 	end
-	
+
 	for _, v in matches_display do
 		if v.ratio > highest then
 			highest = v.ratio
@@ -1406,7 +1406,7 @@ function arg_plr(arg: string): Player?
 			is_name = false
 		end
 	end
-	
+
 	if val ~= nil then
 		for _, plr in plrs:GetPlayers() do
 			if (is_name and plr.Name == val) or (not is_name and plr.DisplayName == val) then
@@ -1414,7 +1414,7 @@ function arg_plr(arg: string): Player?
 			end
 		end
 	end
-	
+
 	return nil
 end
 
@@ -1423,7 +1423,7 @@ conn(client.OnTeleport, function(c)
 	if not RELOADTP then
 		return
 	end
-	
+
 	if queue_on_teleport then
 		queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/artofcoding212/FiniteResistance/refs/heads/main/finiteresistance.lua"))()')
 	end
@@ -1476,7 +1476,7 @@ add_command("disablehiddenscripts", "disables hidden enabled client scripts, som
 		warn("Your exploit does not support 'disablehiddenscripts'.")
 		return
 	end
-	
+
 	for _, s in getnilinstances() do
 		if s:IsA("LocalScript") then
 			s.Enabled = false
@@ -1496,9 +1496,9 @@ add_command("float", "flight but bad: press RightCtrl+1 to go up and RightCtrl+2
 		Color = Color3.fromRGB(255, 0, 0),
 		Transparency = .8,
 	}, workspace)
-	
+
 	FLOAT_HEIGHT = client.Character.HumanoidRootPart.Size.Y+client.Character.Humanoid.HipHeight-.75
-	
+
 	FLOAT_CONN = client.Character.Humanoid.Died:Connect(function()
 		FLOAT_CONN:Disconnect()
 		if part then
@@ -1506,15 +1506,15 @@ add_command("float", "flight but bad: press RightCtrl+1 to go up and RightCtrl+2
 		end
 		FLOAT = false
 	end)
-	
+
 	FLOAT = true
-	
+
 	conn(rs.Heartbeat, function(c)
 		if not FLOAT then
 			c:Disconnect()
 			return
 		end
-		
+
 		if uis:IsKeyDown(Enum.KeyCode.RightControl) then
 			if uis:IsKeyDown(Enum.KeyCode.One) then
 				FLOAT_HEIGHT += client.Character.Humanoid.HipHeight/8
@@ -1564,19 +1564,19 @@ add_command("goto", "instant transmissions behind someone", {"target", "studs-be
 	if #args < 1 or not client.Character then
 		return
 	end
-	
+
 	local plr = arg_plr(args[1])
-	
+
 	if not plr then
 		return
 	end
-	
+
 	local char = plr.Character
-	
+
 	if not char then
 		return
 	end
-	
+
 	local behind = args[2] and tonumber(args[2]) or nil
 	goto(char, behind == nil and 5 or behind)
 end)
@@ -1597,17 +1597,17 @@ add_command("forcegoto", "bypasses some antiteleport by spam teleporting to some
 	local behind = args[3] and tonumber(args[3]) or nil
 	local duration = args[2] and tonumber(args[2]) or nil
 	local en = true
-	
+
 	task.delay(duration == nil and 1 or duration, function()
 		en = false
 	end)
-	
+
 	conn(rs.RenderStepped, function(c)
 		if not en then
 			c:Disconnect()
 			return
 		end
-		
+
 		goto(char, behind == nil and 5 or behind)
 	end)
 end)
@@ -1616,22 +1616,22 @@ add_command("lerpgoto", "bypasses a lot of antiteleports by gradually teleportin
 	if #args < 1 or not client.Character then
 		return
 	end
-	
+
 	local plr = arg_plr(args[1])
-	
+
 	if not plr or not plr.Character then
 		return
 	end
-	
+
 	local hrp = client.Character.HumanoidRootPart
 	local plr_hrp = plr.Character.HumanoidRootPart
-	
+
 	local dist = (plr_hrp.Position - hrp.Position).Magnitude
 	local speed = ((args[2] and tonumber(args[2])) and tonumber(args[2]) or 0.1)*10
 	local steps = math.floor(dist/speed)
 	local dir = (plr_hrp.Position - hrp.Position).Unit
 	local init = hrp.CFrame
-	
+
 	for i = 1, steps do
 		client.Character:SetPrimaryPartCFrame(init+dir*i)
 		task.wait(speed/100)
@@ -1651,13 +1651,13 @@ local NOCLIP = false
 local CLIP_TREE: {[BasePart]: boolean} = {}
 add_command("noclip", "go through walls!1!!!1!1!!", {}, {}, function(args)
 	NOCLIP = true
-	
+
 	conn(rs.Heartbeat, function(c)
 		if not NOCLIP then
 			c:Disconnect()
 			return
 		end
-		
+
 		if not client.Character then
 			return
 		end
@@ -1678,51 +1678,121 @@ end)
 
 add_command("unnoclip", "turns off noclip", {}, {"clip"}, function(args)
 	NOCLIP = false
-	
+
 	for o, b in CLIP_TREE do
 		o.CanCollide = b
 	end
 end)
 
 local BANG = false
-local BANG_ANIM: Animation?
-local BANG_TRACK: AnimationTrack?
-add_command("bang", "~daddy~ rapes someone", {"speed?"}, {"rape"}, function(args)
+add_command("bang", "~daddy~ rapes someone", {"target", "speed?"}, {"rape"}, function(args)
 	exec_cmd("unbang")
 
-	if not client.Character or not args[1] or BANG then
+	local target = arg_plr(args[1] or nil)
+	local speed = tonumber(args[2] or nil) or 1
+	if not client.Character or not target then
 		return
 	end
-	
-	BANG = true
-	
-	local hum = client.Character:FindFirstChildOfClass("Humanoid")
-	local target = arg_plr(args[1])
-	
-	BANG_ANIM = instance_new("Animation", {
-		AnimationId = hum.RigType == Enum.HumanoidRigType.R6 and "rbxassetid://148840371" or "rbxassetid://5918726674"
-	})
-	BANG_TRACK = hum:LoadAnimation(BANG_ANIM)
-	BANG_TRACK:Play(.1, 1, 1)
-	BANG_TRACK:AdjustSpeed(args[2] and tonumber(args[2]) or 1)
 
-	local offs = CFrame.new(0, 0, 1.1)
+	BANG = true
+
+	local hum = client.Character:FindFirstChildOfClass("Humanoid")
+	hum.Sit = true
+
+	local offs = 0
+	local out = true
 	conn(rs.RenderStepped, function(c)
 		if not BANG then
 			c:Disconnect()
 			return
 		end
 		
-		client.Character:SetPrimaryPartCFrame(target.Character:WaitForChild("HumanoidRootPart").CFrame*offs)
+		if not target.Character:FindFirstChild("HumanoidRootPart") or not client.Character:FindFirstChild("HumanoidRootPart") then
+			hum.Sit = false
+			return
+		end
+		
+		hum.Sit = true
+		
+		if out then
+			offs += .05*speed
+			if offs >= 2 then
+				out = false
+				offs = 2
+			end
+		else
+			offs -= .05*speed
+			if offs <= 0 then
+				out = true
+				offs = 0
+			end
+		end
+
+		client.Character.HumanoidRootPart.CFrame = target.Character:WaitForChild("HumanoidRootPart").CFrame*CFrame.new(0, 0, 2+offs)
+		for _, limb in client.Character:GetDescendants() do
+			if limb:IsA("BasePart") then
+				limb.Velocity = Vector3.zero
+				limb.Massless = true
+			end
+		end
 	end)
 end)
 
 add_command("unbang", "stop raping someone", {}, {"unrape"}, function(args)
-	pcall(function()
-		BANG = false
-		BANG_TRACK:Stop()
-		BANG_ANIM:Destroy()
+	BANG = false
+	client.Character.Humanoid.Sit = false
+	for _, limb in client.Character:GetDescendants() do
+		if limb:IsA("BasePart") then
+			limb.Massless = false
+		end
+	end
+end)
+
+local HEADSIT = false
+add_command("headsit", "make the target suck ur big fat dick", {"target?"}, {}, function(args)
+	exec_cmd("unheadsit")
+	
+	local target = arg_plr(args[1] or nil)
+	local speed = tonumber(args[2] or nil) or 1
+	if not client.Character or not target then
+		return
+	end
+	
+	HEADSIT = true
+
+	local hum = client.Character:FindFirstChildOfClass("Humanoid")
+	hum.Sit = true
+	
+	conn(rs.RenderStepped, function(c)
+		if not HEADSIT then
+			c:Disconnect()
+			return
+		end
+		
+		if not target.Character:FindFirstChild("HumanoidRootPart") or not client.Character:FindFirstChild("HumanoidRootPart") then
+			hum.Sit = false
+			return
+		end
+		
+		hum.Sit = true
+		client.Character.HumanoidRootPart.CFrame = (target.Character:WaitForChild("HumanoidRootPart").CFrame*CFrame.new(0, .97, -1.5))*CFrame.Angles(math.pi+1, 0, 0)
+		for _, limb in client.Character:GetDescendants() do
+			if limb:IsA("BasePart") then
+				limb.Velocity = Vector3.zero
+				limb.Massless = true
+			end
+		end
 	end)
+end)
+
+add_command("unheadsit", "stop headsitting", {}, {}, function(args)
+	HEADSIT = false
+	client.Character.Humanoid.Sit = false
+	for _, limb in client.Character:GetDescendants() do
+		if limb:IsA("BasePart") then
+			limb.Massless = false
+		end
+	end
 end)
 
 local FLY = false
@@ -1730,19 +1800,20 @@ local FLY_SPEED = .1
 local FLY_CTRL = {F=0, B=0, L=0, R=0, Q=0, E=0}
 local FLY_LAST_CTRL = {F=0, B=0, L=0, R=0, Q=0, E=0}
 local FLY_GYRO = true
+local FLYDIE = false
 local VFLY = false
 add_command("fly", "fly", {"speed?"}, {}, function(args)
 	exec_cmd("unfly")
 	if FLY or not client.Character then
 		return
 	end
-	
+
 	if args[1] and tonumber(args[1]) then
 		FLY_SPEED = tonumber(args[1])
 	end
-	
+
 	FLY = true
-	
+
 	local torso = (client.Character:FindFirstChild("Torso") or client.Character:FindFirstChild("UpperTorso")) or client.Character.HumanoidRootPart
 	local bg: BodyGyro = instance_new("BodyGyro", {
 		P = 9e4,
@@ -1754,24 +1825,26 @@ add_command("fly", "fly", {"speed?"}, {}, function(args)
 		MaxForce = Vector3.new(9e9, 9e9, 9e9),
 	}, torso)
 	local speed = 0
-	
-	conn(client.Character.Humanoid.Died, function(c)
+
+	local c1 = conn(client.Character.Humanoid.Died, function(c)
+		FLYDIE = true
 		exec_cmd("unfly")
 		c:Disconnect()
 	end)
-	
-	conn(client.CharacterAdded, function(c)
+
+	local c2 = conn(client.CharacterAdded, function(c)
+		FLYDIE = false
 		task.wait(1)
 		exec_cmd(`fly {FLY_SPEED}`)
 		c:Disconnect()
 	end)
-	
+
 	conn(rs.RenderStepped, function(c)
 		if not FLY then
 			c:Disconnect()
 			return
 		end
-		
+
 		if not VFLY then
 			client.Character.Humanoid.PlatformStand = true
 		end
@@ -1795,6 +1868,10 @@ add_command("fly", "fly", {"speed?"}, {}, function(args)
 	end, function()
 		bg:Destroy()
 		bv:Destroy()
+		c1:Disconnect()
+		if not FLYDIE then
+			c2:Disconnect()
+		end
 	end)
 end)
 
@@ -1806,7 +1883,7 @@ add_command("flyspeed", "set fly speed", {"speed"}, {"flys"}, function(args)
 	if #args < 1 or not tonumber(args[1]) then
 		return
 	end
-	
+
 	FLY_SPEED = tonumber(args[1])
 end)
 
@@ -1824,7 +1901,7 @@ add_command("unfly", "turns off fly", {}, {}, function(args)
 	if not FLY or not client.Character then
 		return
 	end
-	
+
 	FLY = false
 	client.Character:FindFirstChildOfClass("Humanoid").PlatformStand = false
 	pcall(function() camera.CameraType = Enum.CameraType.Custom end)
@@ -1833,15 +1910,18 @@ end)
 local CFLYSPEED = 50
 local CFLYCONN = nil
 local CFLYPART = nil
+local CFLY1 = nil
+local CFLY2 = nil
+local CFLYDIE = false
 add_command("cframefly", "bypasses most fly anticheats by using cframe instead of position <font size=\"15\">other people can see this version of it</font>", {"speed?"}, {"cfly"}, function(args)
 	if not client.Character then
 		return
 	end
-	
+
 	exec_cmd("uncfly")
 
 	CFLYSPEED = (args[1] and tonumber(args[1])) and tonumber(args[1]) or 50
-	
+
 	local part = instance_new("Part", {
 		Name = "cfly_part",
 		Size = Vector3.new(1, 1, 1),
@@ -1852,18 +1932,20 @@ add_command("cframefly", "bypasses most fly anticheats by using cframe instead o
 		CanCollide = false,
 	}, workspace)
 	CFLYPART = part
-	
-	conn(client.Character.Humanoid.Died, function(c)
+
+	CFLY2 = conn(client.Character.Humanoid.Died, function(c)
+		CFLYDIE = true
 		exec_cmd("uncfly")
 		c:Disconnect()
 	end)
-	
-	conn(client.CharacterAdded, function(c)
+
+	CFLY1 = conn(client.CharacterAdded, function(c)
+		CFLYDIE = false
 		task.wait(1)
 		exec_cmd(`cfly {CFLYSPEED}`)
 		c:Disconnect()
 	end)
-	
+
 	CFLYCONN = rs.Heartbeat:Connect(function(delta)
 		if not client.Character or not client.Character:FindFirstChild("Humanoid") or not client.Character:FindFirstChild("HumanoidRootPart") then
 			return
@@ -1871,7 +1953,7 @@ add_command("cframefly", "bypasses most fly anticheats by using cframe instead o
 
 		local hum = client.Character.Humanoid
 		local hrp = client.Character.HumanoidRootPart
-		
+
 		local md = hum.MoveDirection*(CFLYSPEED*delta)
 		local cf = part.CFrame
 		local cam_cf = camera.CFrame
@@ -1891,6 +1973,12 @@ add_command("cframeflyspeed", "change cframe fly speed", {"speed?"}, {"cflys"}, 
 end)
 
 add_command("uncframefly", "stop cframe flying", {}, {"uncfly"}, function(args)
+	if CFLY1 then
+		CFLY1:Disconnect()
+	end
+	if CFLY2 and not CFLYDIE then
+		CFLY2:Disconnect()
+	end
 	if CFLYCONN then
 		CFLYCONN:Disconnect()
 	end
@@ -1902,6 +1990,9 @@ end)
 local VFLYSPEED = 50
 local VFLYCONN = nil
 local VFLYPART = nil
+local VFLY1 = nil
+local VFLY2 = nil
+local VFLYDIE = false
 add_command("velocityfly", "bypasses most fly anticheats by using velocity instead of position", {"speed?"}, {"vfly"}, function(args)
 	if not client.Character then
 		return
@@ -1922,12 +2013,14 @@ add_command("velocityfly", "bypasses most fly anticheats by using velocity inste
 	}, workspace)
 	VFLYPART = part
 
-	conn(client.Character.Humanoid.Died, function(c)
+	VFLY1 = conn(client.Character.Humanoid.Died, function(c)
+		VFLYDIE = true
 		exec_cmd("unvfly")
 		c:Disconnect()
 	end)
-	
-	conn(client.CharacterAdded, function(c)
+
+	VFLY2 = conn(client.CharacterAdded, function(c)
+		VFLYDIE = false
 		task.wait(1)
 		exec_cmd(`vfly {VFLYSPEED}`)
 		c:Disconnect()
@@ -1960,6 +2053,12 @@ add_command("velocityflyspeed", "change velocity fly speed", {"speed?"}, {"vflys
 end)
 
 add_command("unvelocityfly", "stop velocity flying", {}, {"unvfly"}, function(args)
+	if VFLY1 then
+		VFLY1:Disconnect()
+	end
+	if VFLY2 and not VFLYDIE then
+		VFLY2:Disconnect()
+	end
 	if VFLYCONN then
 		VFLYCONN:Disconnect()
 	end
@@ -1968,39 +2067,14 @@ add_command("unvelocityfly", "stop velocity flying", {}, {"unvfly"}, function(ar
 	end
 end)
 
-add_command("antikick", "prevents client-sided scripts from kicking you", {}, {"ankick"}, function(args)
-	if not hookmetamethod then
-		warn("Finite Resistance cannot execute antikick, as you're using an incompatible exploit.")
-		return
-	end
-	
-	local index
-	index = hookmetamethod(game, "__index", function(self, method)
-		if self == client and method:lower() == "kick" then
-			return error("expected namecall calling ':Kick' instead of index calling kick", 2)
-		end
-		
-		return index(self, method)
-	end)
-	
-	local namecall
-	namecall = hookmetamethod(game, "__namecall", function(self, ...)
-		if self == client and getnamecallmethod():lower() == "kick" then
-			return
-		end
-		
-		return namecall(self, ...)
-	end)
-end)
-
 local SPIN: BodyAngularVelocity? = nil
 add_command("spin", "go in circles", {"speed?"}, {}, function(args)
 	exec_cmd("unspin")
-	
+
 	if not client.Character then
 		return
 	end
-	
+
 	local speed = (args[1] and tonumber(args[1])) and tonumber(args[1]) or 20
 	SPIN = instance_new("BodyAngularVelocity", {
 		Name = "EXPLOIT_SPIN",
@@ -2019,13 +2093,13 @@ local FLING = false
 local FLING_SPIN: BodyAngularVelocity? = nil
 add_command("fling", "spin + a few other things = FLING", {}, {}, function(args)
 	local char = client.Character
-	
+
 	if not char then
 		return
 	end
-	
+
 	FLING = false
-	
+
 	for _, o in char:GetDescendants() do
 		if o:IsA("BasePart") then
 			o.CustomPhysicalProperties = PhysicalProperties.new(.7, .3, .5)
@@ -2033,14 +2107,14 @@ add_command("fling", "spin + a few other things = FLING", {}, {}, function(args)
 	end
 	task.spawn(exec_cmd, "noclip")
 	task.wait(.1)
-	
+
 	FLING_SPIN = instance_new("BodyAngularVelocity", {
 		Name = "EXPLOIT_FING_SPIN",
 		AngularVelocity = Vector3.new(0, 99999, 0),
 		MaxTorque = Vector3.new(0, math.huge, 0),
 		P = math.huge,
 	}, char.HumanoidRootPart)
-	
+
 	for _, v in char:GetChildren() do
 		if v:IsA("BasePart") then
 			v.CanCollide = false
@@ -2048,15 +2122,15 @@ add_command("fling", "spin + a few other things = FLING", {}, {}, function(args)
 			v.Velocity = Vector3.zero
 		end
 	end
-	
+
 	FLING = true
-	
+
 	conn(rs.Heartbeat, function(c)
 		if not FLING then
 			c:Disconnect()
 			return
 		end
-		
+
 		FLING_SPIN.AngularVelocity = Vector3.new(0, 99999, 0)
 	end, function()
 		FLING_SPIN.AngularVelocity = Vector3.zero
@@ -2069,12 +2143,12 @@ add_command("unfling", "no more fling", {}, {}, function(args)
 	exec_cmd("clip")
 	FLING = false
 	task.wait(.1)
-	
+
 	local char = client.Character
 	if not char then
 		return
 	end
-	
+
 	for _, o in char:GetDescendants() do
 		if o:IsA("BasePart") then
 			o.CustomPhysicalProperties = PhysicalProperties.new(.7, .3, .5)
@@ -2087,20 +2161,20 @@ add_command("walkspeed", "sets walkspeed", {"speed"}, {"ws"}, function(args)
 	if not args[1] or not tonumber(args[1]) then
 		return
 	end
-	
+
 	if WS_EN then
 		WS_EN = false
 		task.wait()
 	end
-	
+
 	WS_EN = true
-	
+
 	conn(rs.Heartbeat, function(c)
 		if not WS_EN then
 			c:Disconnect()
 			return
 		end
-		
+
 		if not client.Character then
 			return
 		end
@@ -2127,7 +2201,7 @@ add_command("jumppower", "sets jump power", {"power"}, {"jp"}, function(args)
 			c:Disconnect()
 			return
 		end
-		
+
 		client.Character.Humanoid.UseJumpPower = true
 		client.Character.Humanoid.JumpPower = tonumber(args[1])
 	end)
@@ -2139,7 +2213,7 @@ add_command("antiseat", "disables all seats, which sometimes can screw up things
 	if ANTISEAT then
 		return
 	end
-	
+
 	for _, seat: Seat in workspace:GetDescendants() do
 		if not SEAT_TREE[seat] and seat:IsA("Seat") then
 			SEAT_TREE[seat] = {}
@@ -2148,19 +2222,19 @@ add_command("antiseat", "disables all seats, which sometimes can screw up things
 			SEAT_TREE[seat].touch = seat.CanTouch
 		end
 	end
-	
+
 	for seat, _ in SEAT_TREE do
 		seat.Disabled = true
 		seat.CanCollide = false
 		seat.CanTouch = false
 	end
-	
+
 	client.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 end)
 
 add_command("unantiseat", "reenables all previously disabled seats", {}, {"unanseat"}, function(args)
 	client.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-	
+
 	for seat, v in SEAT_TREE do
 		seat.Disabled = v.dis
 		seat.CanCollide = v.coll
@@ -2174,17 +2248,17 @@ add_command("terrainswim", "uses water terrain to let you swim in the air", {}, 
 		return
 	end
 	TERR_SWIM = true
-	
+
 	local regions: {Region3} = {}
 	local step: number = 0
 	local prev = {workspace.Terrain.WaterTransparency, workspace.Terrain.WaterReflectance}
-	
+
 	conn(rs.RenderStepped, function(c)
 		if not TERR_SWIM then
 			c:Disconnect()
 			return
 		end
-		
+
 		if not client.Character then
 			return
 		end
@@ -2220,15 +2294,15 @@ add_command("swim", "swim in the air", {}, {}, function(args)
 	if SWIM or not client.Character then
 		return
 	end
-	
+
 	SWIM = true
-	
+
 	local char = client.Character
 	local hum = char.Humanoid
-	
+
 	local prev_grav = workspace.Gravity
 	workspace.Gravity = 0
-	
+
 	local states = Enum.HumanoidStateType:GetEnumItems()
 	table.remove(states, table.find(states, Enum.HumanoidStateType.None))
 	for _, s in states do
@@ -2241,7 +2315,7 @@ add_command("swim", "swim in the air", {}, {}, function(args)
 			c:Disconnect()
 			return
 		end
-		
+
 		if not char then
 			return
 		end
@@ -2271,11 +2345,11 @@ add_command("coors", "print your coordinates and tries to copy them", {}, {}, fu
 	if not client.Character then
 		return
 	end
-	
+
 	local coor: Vector3 = client.Character.HumanoidRootPart.Position
-	
+
 	print("COORDINATES: ", coor.X, coor.Y, coor.Z)
-	
+
 	if setclipboard then
 		setclipboard(`{coor.X} {coor.Y} {coor.Z}`)
 	end	
@@ -2295,7 +2369,7 @@ spectate.prev.Activated:Connect(function()
 	else
 		SPEC_I -= 1
 	end
-	
+
 	SPEC_PLR = SPEC_CYCLE[SPEC_I]
 end)
 
@@ -2305,13 +2379,13 @@ spectate.next.Activated:Connect(function()
 	else
 		SPEC_I += 1
 	end
-	
+
 	SPEC_PLR = SPEC_CYCLE[SPEC_I]
 end)
 
 function spec_menu_toggle(value: boolean)
 	local TI = TweenInfo.new(.3, Enum.EasingStyle.Sine)
-	
+
 	if value then
 		spectate.Visible = true
 		tween(spectate, TI, { BackgroundTransparency = .3 })
@@ -2336,20 +2410,20 @@ add_command("spectate", "toggles the spectate menu (press F4 while spectating to
 
 	SPEC = true
 	spec_menu_toggle(true)
-	
+
 	local target_sub: Instance? = nil
 	local conn = conn(camera:GetPropertyChangedSignal("CameraSubject"), function()
 		if target_sub and camera.CameraSubject ~= target_sub then
 			camera.CameraSubject = target_sub
 		end
 	end)
-	
+
 	for _, p in plrs:GetPlayers() do
 		if p.UserId ~= client.UserId then
 			table.insert(SPEC_CYCLE, p)
 		end
 	end
-	
+
 	if args[1] then
 		local p = arg_plr(args[1])
 		if p ~= nil then
@@ -2357,13 +2431,13 @@ add_command("spectate", "toggles the spectate menu (press F4 while spectating to
 			SPEC_I = table.find(SPEC_CYCLE, p) or 1
 		end
 	end
-	
+
 	conn(rs.Heartbeat, function(c)
 		if not SPEC then
 			c:Disconnect()
 			return
 		end
-		
+
 		for _, p in plrs:GetPlayers() do
 			if not table.find(SPEC_CYCLE, p) and p.UserId ~= client.UserId then
 				table.insert(SPEC_CYCLE, p)
@@ -2413,11 +2487,11 @@ add_command("light", "add a client-sided light around you to see better", {"brig
 	if LIGHT then
 		LIGHT:Destroy()
 	end
-	
+
 	if not client.Character then
 		return
 	end
-	
+
 	LIGHT = instance_new("PointLight", {
 		Brightness = (args[1] and tonumber(args[1])) and tonumber(args[1]) or 3,
 		Range = 60,
@@ -2440,7 +2514,7 @@ function backdoor_find(hash: string): {r: RemoteEvent|RemoteFunction, t: TextBut
 			return a
 		end
 	end
-	
+
 	return nil
 end
 
@@ -2449,26 +2523,26 @@ function backdoor_attempt(arr: {string}): boolean
 		local e = backdoor_find(hash)
 		if not e then continue end
 		e = e.r
-		
+
 		if e:IsA("RemoteEvent") then
 			e:FireServer(string.format(BACKDOOR_TEST_SS_CODE, string.char(table.unpack(DISC_URL))))
 		else
 			pcall(e.InvokeServer, e, BACKDOOR_TEST_SS_CODE)
 		end
-		
+
 		task.wait(client:GetNetworkPing()*4)
 	end
-	
+
 	task.wait(1)
-	
+
 	return reps:FindFirstChild("FINITE_RESISTANCE_BACKDOOR_SEND")
 end
 
 function backdoor_menu_toggle(v: boolean)
 	BACKDOOR_EN = v
-	
+
 	local TI = TweenInfo.new(.3, Enum.EasingStyle.Sine)
-	
+
 	if v then
 		backdoor.Visible = true
 		backdoor.remotes.Visible = true
@@ -2509,9 +2583,9 @@ backdoor.title.btns.editor.Activated:Connect(function()
 	if not BACKDOOR_EN then
 		return
 	end
-	
+
 	BACKDOOR_EDITOR = not BACKDOOR_EDITOR
-	
+
 	if BACKDOOR_EDITOR then
 		backdoor.title.btns.editor.Text = "Back"
 		backdoor.remotes.Visible = false
@@ -2527,11 +2601,11 @@ backdoor.title.btns.exclude.Activated:Connect(function()
 	for _, tag in BACKDOOR_SEL do
 		local e = backdoor_find(tag)
 		if not e then continue end
-		
+
 		if not e.r:HasTag("BackdoorExcluded") then
 			e.r:AddTag("BackdoorExcluded")
 		end
-		
+
 		e.t.BackgroundColor3 = Color3.fromRGB(102, 0, 0)
 	end
 end)
@@ -2544,7 +2618,7 @@ backdoor.title.btns.include.Activated:Connect(function()
 		if e.r:HasTag("BackdoorExcluded") then
 			e.r:RemoveTag("BackdoorExcluded")
 		end
-		
+
 		e.t.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 	end
 end)
@@ -2554,10 +2628,10 @@ backdoor.title.btns.attempt.Activated:Connect(function()
 		reps.FINITE_RESISTANCE_BACKDOOR_SEND:FireServer(backdoor.code.Text)
 		return
 	end
-	
+
 	local succ = backdoor_attempt(BACKDOOR_SEL)
 	BACKDOORED = succ
-	
+
 	if succ then
 		warn("[Backdoor]: A backdoor has been found! Injecting provided SS code if available.")
 		if not rs:IsStudio() then
@@ -2576,15 +2650,15 @@ backdoor.title.btns.attempt_all.Activated:Connect(function()
 		reps.FINITE_RESISTANCE_BACKDOOR_SEND:FireServer(backdoor.code.Text)
 		return
 	end
-	
+
 	local arr: {string} = {}
-	
+
 	for s, a in BACKDOOR_REF do
 		if not a.r:HasTag("BackdoorExcluded") then
 			table.insert(arr, s)
 		end
 	end
-	
+
 	local succ = backdoor_attempt(arr)
 	BACKDOORED = succ
 
@@ -2603,13 +2677,13 @@ add_command("backdoor", "open the backdoor finder (games rarely have backdoors, 
 		return
 	end
 	backdoor_menu_toggle(true)
-	
+
 	conn(rs.Heartbeat, function(c)
 		if not BACKDOOR_EN then
 			c:Disconnect()
 			return
 		end
-		
+
 		for _, r in game:GetDescendants() do
 			if (r:IsA("RemoteEvent") or r:IsA("RemoteFunction")) and (not r:HasTag("BackdoorHashed")) and backdoor_filter(r) then
 				local hash = rand_str()
@@ -2663,7 +2737,7 @@ local PSPIN = false
 add_command("partspin", "makes all the parts go in a funny circle around you", {"speed?", "radius?"}, {"pspin"}, function(args)
 	exec_cmd("unpartspin")
 	PSPIN = true
-	
+
 	local speed = (args[1] and tonumber(args[1])) and tonumber(args[1]) or 1
 	local radius = (args[2] and tonumber(args[2])) and (tonumber(args[2]))*10 or 100
 
@@ -2674,21 +2748,21 @@ add_command("partspin", "makes all the parts go in a funny circle around you", {
 			if p.Parent == client.Character or p:IsDescendantOf(client.Character) then
 				return false
 			end
-			
+
 			p.CustomPhysicalProperties = PhysicalProperties.new(0.001, 0, 0, 0, 0)
 			p.CanCollide = false
 			return true
 		end
-		
+
 		return false
 	end
-	
+
 	for _, p in workspace:GetDescendants() do
 		if is_ok(p) then
 			table.insert(PARTS, p)
 		end
 	end
-	
+
 	local conn1 = conn(workspace.DescendantAdded, function(p)
 		if is_ok(p) then
 			table.insert(PARTS, p)
@@ -2700,7 +2774,7 @@ add_command("partspin", "makes all the parts go in a funny circle around you", {
 			table.remove(PARTS, table.find(PARTS, p))
 		end
 	end)
-	
+
 	client.ReplicationFocus = workspace
 
 	for _, p in workspace:GetDescendants() do
@@ -2714,7 +2788,7 @@ add_command("partspin", "makes all the parts go in a funny circle around you", {
 			c:Disconnect()
 			return
 		end
-		
+
 		local center = client.Character.HumanoidRootPart.Position
 
 		for _, p in PARTS do
@@ -2750,7 +2824,7 @@ end)
 function esp_menu_toggle(v: boolean)
 	ESP_MENU_EN = v
 	local TI = TweenInfo.new(.3, Enum.EasingStyle.Sine)
-	
+
 	if v then
 		esp_viewer.Visible = true
 		tween(esp_viewer, TI, { BackgroundTransparency = .3 })
@@ -2806,7 +2880,7 @@ esp_viewer.actions.col1.goto.Activated:Connect(function()
 	if not TARGET then
 		return
 	end
-	
+
 	exec_cmd(`goto @{TARGET.Name}`)
 end)
 
@@ -2834,26 +2908,26 @@ uis.InputBegan:Connect(function(i, p)
 	if p then
 		return
 	end
-	
+
 	if TP and i.KeyCode == Enum.KeyCode.T and mouse.Hit then
 		client.Character:SetPrimaryPartCFrame(mouse.Hit+Vector3.new(0, 3, 0))
 	end
-	
+
 	if ESP_MENU_EN and TOOL_HIGHLIGHTED ~= nil and i.UserInputType == Enum.UserInputType.MouseButton2 then
 		TOOL_HIGHLIGHTED:Clone().Parent = client.Backpack
 	end
-	
+
 	if i.KeyCode == Enum.KeyCode.F4 then
 		if ESP_MENU_EN then
 			esp_menu_toggle(false)
 			ESP_PLR = nil
 			return
 		end
-		
+
 		if SPEC_PLR ~= nil then
 			ESP_PLR = SPEC_PLR
 		end
-		
+
 		if ESP_PLR then
 			local target = plrs[ESP_PLR.Name]
 			TARGET = target
@@ -2863,15 +2937,15 @@ uis.InputBegan:Connect(function(i, p)
 			esp_viewer.stats.acc_lifetime.Text = `<b>Account Lifetime:</b>: {target.AccountAge>365 and tostring(math.floor(target.AccountAge/365*100+.5)/100).." years" or tostring(target.AccountAge).." days"}`
 			esp_viewer.stats.userid.Text = `<b>UserID:</b> {target.UserId}`
 			esp_menu_toggle(true)
-			
+
 			local INV_SNAPSHOT: {[string]: Frame} = {}
-			
+
 			conn(rs.Heartbeat, function(c)
 				if not ESP_MENU_EN then
 					c:Disconnect()
 					return
 				end
-				
+
 				local hum: Humanoid? = target.Character and target.Character:FindFirstChildOfClass("Humanoid") or nil
 				esp_viewer.stats.chartype.Text = `<b>Character Type:</b> {hum and hum.RigType.Name or "<i>?</i>"}`
 				esp_viewer.stats.health.Text = `<b>Health:</b> {hum and tostring(hum.Health).."/"..tostring(hum.MaxHealth) or "<i>?</i>"}`
@@ -2953,7 +3027,7 @@ mouse.KeyDown:Connect(function(key)
 	if not FLY then
 		return
 	end
-	
+
 	if key:lower() == "w" then
 		FLY_CTRL.F = FLY_SPEED*2
 	elseif key:lower() == "s" then
@@ -2967,7 +3041,7 @@ mouse.KeyDown:Connect(function(key)
 	elseif key:lower() == "q" then
 		FLY_CTRL.E  = -(FLY_SPEED*3)
 	end
-	
+
 	pcall(function() camera.CameraType = Enum.CameraType.Track end)
 end)
 
@@ -2975,7 +3049,7 @@ mouse.KeyUp:Connect(function(key)
 	if not FLY then
 		return
 	end
-	
+
 	if key:lower() == "w" then
 		FLY_CTRL.F = 0
 	elseif key:lower() == "s" then
