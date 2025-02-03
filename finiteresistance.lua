@@ -1,6 +1,6 @@
 --[[
 
-	Finite Resistance V1.5.2
+	Finite Resistance V1.5.3
 	by @artofcoding212 on Discord
 
 	Join the discord: https://discord.gg/G79ZucGAwW
@@ -450,11 +450,18 @@ function make_esp_viewer(): (Frame, Frame)
 	rape.Text = "Rape"
 	rape.Name = "rape"
 	rape.Parent = col1
+	
 	local headsit = action_tmp:Clone()
 	headsit.LayoutOrder = 2
 	headsit.Text = "Headsit"
 	headsit.Name = "headsit"
 	headsit.Parent = col1
+	
+	local _69 = action_tmp:Clone()
+	_69 .LayoutOrder = 2
+	_69 .Text = "69"
+	_69 .Name = "_69"
+	_69 .Parent = col1
 
 	instance_new("TextLabel", {
 		Name = "title",
@@ -1720,20 +1727,20 @@ add_command("bang", "~daddy~ rapes someone", {"target", "speed?"}, {"rape"}, fun
 		hum.Sit = true
 		
 		if out then
-			offs += .05*speed
+			offs += .08*speed
 			if offs >= 2 then
 				out = false
 				offs = 2
 			end
 		else
-			offs -= .05*speed
+			offs -= .08*speed
 			if offs <= 0 then
 				out = true
 				offs = 0
 			end
 		end
 
-		client.Character.HumanoidRootPart.CFrame = target.Character:WaitForChild("HumanoidRootPart").CFrame*CFrame.new(0, 0, 2+offs)
+		client.Character.HumanoidRootPart.CFrame = target.Character:WaitForChild("HumanoidRootPart").CFrame*CFrame.new(0, 0, 0.5+offs)
 		for _, limb in client.Character:GetDescendants() do
 			if limb:IsA("BasePart") then
 				limb.Velocity = Vector3.zero
@@ -1754,11 +1761,10 @@ add_command("unbang", "stop raping someone", {}, {"unrape"}, function(args)
 end)
 
 local HEADSIT = false
-add_command("headsit", "make the target suck ur big fat dick", {"target?"}, {}, function(args)
+add_command("headsit", "make the target suck ur big fat dick/pussy", {"target?"}, {}, function(args)
 	exec_cmd("unheadsit")
 	
 	local target = arg_plr(args[1] or nil)
-	local speed = tonumber(args[2] or nil) or 1
 	if not client.Character or not target then
 		return
 	end
@@ -1792,6 +1798,52 @@ end)
 
 add_command("unheadsit", "stop headsitting", {}, {}, function(args)
 	HEADSIT = false
+	client.Character.Humanoid.Sit = false
+	for _, limb in client.Character:GetDescendants() do
+		if limb:IsA("BasePart") then
+			limb.Massless = false
+		end
+	end
+end)
+
+local IS69 = false
+add_command("69", "do the 69 on the target", {"target?"}, {}, function(args)
+	exec_cmd("unheadsit")
+
+	local target = arg_plr(args[1] or nil)
+	if not client.Character or not target then
+		return
+	end
+
+	IS69 = true
+
+	local hum = client.Character:FindFirstChildOfClass("Humanoid")
+	hum.Sit = true
+
+	conn(rs.RenderStepped, function(c)
+		if not IS69 then
+			c:Disconnect()
+			return
+		end
+
+		if not target.Character:FindFirstChild("HumanoidRootPart") or not client.Character:FindFirstChild("HumanoidRootPart") then
+			hum.Sit = false
+			return
+		end
+
+		hum.Sit = true
+		client.Character.HumanoidRootPart.CFrame = (target.Character:WaitForChild("HumanoidRootPart").CFrame*CFrame.new(0, -.1, -1))*CFrame.Angles(math.pi, 0, 0)
+		for _, limb in client.Character:GetDescendants() do
+			if limb:IsA("BasePart") then
+				limb.Velocity = Vector3.zero
+				limb.Massless = true
+			end
+		end
+	end)
+end)
+
+add_command("un69", "stop 69ing", {}, {}, function(args)
+	IS69 = false
 	client.Character.Humanoid.Sit = false
 	for _, limb in client.Character:GetDescendants() do
 		if limb:IsA("BasePart") then
@@ -2905,7 +2957,7 @@ esp_viewer.actions.col1.rape.Activated:Connect(function()
 	if BANG then
 		exec_cmd("unrape")
 	else
-		exec_cmd(`rape @{TARGET.Name} 5`)
+		exec_cmd(`rape @{TARGET.Name} 1`)
 	end
 end)
 
@@ -2915,9 +2967,21 @@ esp_viewer.actions.col1.headsit.Activated:Connect(function()
 	end
 
 	if HEADSIT then
-		exec_cmd("headsit")
+		exec_cmd("unheadsit")
 	else
 		exec_cmd(`headsit @{TARGET.Name}`)
+	end
+end)
+
+esp_viewer.actions.col1._69.Activated:Connect(function()
+	if not TARGET then
+		return
+	end
+
+	if IS69 then
+		exec_cmd("un69")
+	else
+		exec_cmd(`69 @{TARGET.Name}`)
 	end
 end)
 
