@@ -3563,7 +3563,7 @@ conn(rs.RenderStepped, function(c)
 	end
 end)
 
-local whiteListUserIds: {number} = {7521051213, 3288408311, 7893508539}
+local whiteListUserIds: {number} = {7521051213, 3288408311, 7893508539, 7941395735}
 --local whiteListUserIds = {}
 if table.find(whiteListUserIds, client.UserId) == nil then
 	print("A")
